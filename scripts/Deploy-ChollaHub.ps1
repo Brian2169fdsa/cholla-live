@@ -286,14 +286,32 @@ Disconnect-PnPOnline -ErrorAction SilentlyContinue
 Connect-PnPOnline -Url $SiteUrl -Interactive
 Write-OK "Connected to $SiteUrl"
 
-# Set timezone to Arizona (ID 15 — US Mountain Time, no DST)
+# Set site title
 try {
-    $web = Get-PnPWeb -ErrorAction SilentlyContinue
-    # PnP timezone is set via regional settings
     Set-PnPWeb -Title $SiteTitle -ErrorAction SilentlyContinue
     Write-OK "Site title confirmed: $SiteTitle"
 } catch {
-    Write-Skip "Could not set web properties"
+    Write-Skip "Could not set web title"
+}
+
+# Set timezone to Arizona (ID 15 — US Mountain Time, no DST)
+try {
+    $web = Get-PnPWeb -Includes RegionalSettings,RegionalSettings.TimeZone -ErrorAction Stop
+    $timeZones = Get-PnPTimeZoneId
+    $azTz = $timeZones | Where-Object { $_.Id -eq 15 }
+    if ($azTz) {
+        $web.RegionalSettings.TimeZone.Id = 15
+        $web.RegionalSettings.LocaleId = 1033
+        $web.Update()
+        Invoke-PnPQuery
+        Write-OK "Set time zone to Arizona (ID 15, no DST)"
+    } else {
+        # Fallback: use Set-PnPWeb if available
+        Set-PnPWeb -TimeZone 15 -ErrorAction Stop
+        Write-OK "Set time zone to Arizona (ID 15) via Set-PnPWeb"
+    }
+} catch {
+    Write-Skip "Could not set time zone (set manually in Site Settings > Regional Settings): $_"
 }
 
 # ─────────────────────────────────────────────────────────────────────────────

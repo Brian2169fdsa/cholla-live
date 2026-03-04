@@ -367,6 +367,113 @@
         ]
       },
       {
+        "name": "Group Attendance Log",
+        "columns": [
+          { "name": "Date", "dataType": "dateTime", "sourceColumn": "Date" },
+          { "name": "GroupName", "dataType": "string", "sourceColumn": "GroupName" },
+          { "name": "Facilitator", "dataType": "string", "sourceColumn": "Facilitator" },
+          { "name": "Attendees", "dataType": "int64", "sourceColumn": "Attendees" },
+          { "name": "Notes", "dataType": "string", "sourceColumn": "Notes" }
+        ],
+        "partitions": [
+          {
+            "name": "Group Attendance Log",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let Source = SharePoint.Tables(\"https://chollabehavioralhealth.sharepoint.com/sites/iop-hub-dev\", [Implementation=\"2.0\"]), GroupAttendanceLog = Source{[Title=\"Group Attendance Log\"]}[Items] in GroupAttendanceLog"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Treatment Plan Review Dates",
+        "columns": [
+          { "name": "ClientID", "dataType": "string", "sourceColumn": "ClientID" },
+          { "name": "Therapist", "dataType": "string", "sourceColumn": "Therapist" },
+          { "name": "LastReviewDate", "dataType": "dateTime", "sourceColumn": "LastReviewDate" },
+          { "name": "NextReviewDue", "dataType": "dateTime", "sourceColumn": "NextReviewDue" },
+          { "name": "Status", "dataType": "string", "sourceColumn": "Status" },
+          { "name": "Notes", "dataType": "string", "sourceColumn": "Notes" }
+        ],
+        "partitions": [
+          {
+            "name": "Treatment Plan Review Dates",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let Source = SharePoint.Tables(\"https://chollabehavioralhealth.sharepoint.com/sites/iop-hub-dev\", [Implementation=\"2.0\"]), TreatmentPlanReviewDates = Source{[Title=\"Treatment Plan Review Dates\"]}[Items] in TreatmentPlanReviewDates"
+            }
+          }
+        ]
+      },
+      {
+        "name": "UDS Tracking Log",
+        "columns": [
+          { "name": "ClientID", "dataType": "string", "sourceColumn": "ClientID" },
+          { "name": "TestDate", "dataType": "dateTime", "sourceColumn": "TestDate" },
+          { "name": "Result", "dataType": "string", "sourceColumn": "Result" },
+          { "name": "SubstanceDetected", "dataType": "string", "sourceColumn": "SubstanceDetected" },
+          { "name": "ActionTaken", "dataType": "string", "sourceColumn": "ActionTaken" },
+          { "name": "Notes", "dataType": "string", "sourceColumn": "Notes" }
+        ],
+        "partitions": [
+          {
+            "name": "UDS Tracking Log",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let Source = SharePoint.Tables(\"https://chollabehavioralhealth.sharepoint.com/sites/iop-hub-dev\", [Implementation=\"2.0\"]), UDSTrackingLog = Source{[Title=\"UDS Tracking Log\"]}[Items] in UDSTrackingLog"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Payroll Tracker",
+        "columns": [
+          { "name": "PayPeriod", "dataType": "string", "sourceColumn": "PayPeriod" },
+          { "name": "StaffName", "dataType": "string", "sourceColumn": "StaffName" },
+          { "name": "Role", "dataType": "string", "sourceColumn": "Role" },
+          { "name": "RegularHours", "dataType": "double", "sourceColumn": "RegularHours" },
+          { "name": "OTHours", "dataType": "double", "sourceColumn": "OTHours" },
+          { "name": "GrossPay", "dataType": "decimal", "sourceColumn": "GrossPay" },
+          { "name": "Status", "dataType": "string", "sourceColumn": "Status" },
+          { "name": "Notes", "dataType": "string", "sourceColumn": "Notes" }
+        ],
+        "partitions": [
+          {
+            "name": "Payroll Tracker",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let Source = SharePoint.Tables(\"https://chollabehavioralhealth.sharepoint.com/sites/iop-hub-dev\", [Implementation=\"2.0\"]), PayrollTracker = Source{[Title=\"Payroll Tracker\"]}[Items] in PayrollTracker"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Open Positions",
+        "columns": [
+          { "name": "PositionTitle", "dataType": "string", "sourceColumn": "PositionTitle" },
+          { "name": "Department", "dataType": "string", "sourceColumn": "Department" },
+          { "name": "PostedDate", "dataType": "dateTime", "sourceColumn": "PostedDate" },
+          { "name": "Applications", "dataType": "int64", "sourceColumn": "Applications" },
+          { "name": "Interviews", "dataType": "int64", "sourceColumn": "Interviews" },
+          { "name": "Status", "dataType": "string", "sourceColumn": "Status" },
+          { "name": "Notes", "dataType": "string", "sourceColumn": "Notes" }
+        ],
+        "partitions": [
+          {
+            "name": "Open Positions",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let Source = SharePoint.Tables(\"https://chollabehavioralhealth.sharepoint.com/sites/iop-hub-dev\", [Implementation=\"2.0\"]), OpenPositions = Source{[Title=\"Open Positions\"]}[Items] in OpenPositions"
+            }
+          }
+        ]
+      },
+      {
         "name": "EmployeeTrainingLog",
         "columns": [
           { "name": "StaffName", "dataType": "string", "sourceColumn": "StaffName" },
