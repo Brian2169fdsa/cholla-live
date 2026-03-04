@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clinical Department KPIs — Cholla Behavioral Health</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,sans-serif;background:#f5f5f5;color:#323130;padding:20px;line-height:1.5}
+.header{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:12px;border-bottom:3px solid #1a7a7a}
+.header h1{font-size:1.4em;color:#0d5f5f}
+.header .badge{background:#1a7a7a;color:#fff;font-size:.7em;padding:3px 10px;border-radius:12px}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px;margin-bottom:24px}
+.kpi-card{background:#fff;border-radius:8px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.1);border-top:3px solid #1a7a7a;text-align:center}
+.kpi-card.alert{border-top-color:#d83b01}
+.kpi-card.success{border-top-color:#107c10}
+.kpi-card.warn{border-top-color:#986f0b}
+.kpi-value{font-size:2.2em;font-weight:700;color:#1a7a7a;line-height:1.1}
+.kpi-card.alert .kpi-value{color:#d83b01}
+.kpi-card.success .kpi-value{color:#107c10}
+.kpi-card.warn .kpi-value{color:#986f0b}
+.kpi-label{font-size:.78em;color:#605e5c;text-transform:uppercase;letter-spacing:.5px;margin-top:4px}
+.kpi-sub{font-size:.72em;color:#a19f9d;margin-top:2px}
+.section{background:#fff;border-radius:8px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.1);margin-bottom:20px}
+.section h2{font-size:1.1em;color:#0d5f5f;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #edebe9}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+table{border-collapse:collapse;width:100%;font-size:.85em}
+th{background:#1a7a7a;color:#fff;padding:8px 12px;text-align:left;font-weight:600}
+td{padding:8px 12px;border-bottom:1px solid #edebe9}
+tr:hover td{background:#f2f9f9}
+.status{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.75em;font-weight:600}
+.status-green{background:#dff6dd;color:#107c10}
+.status-yellow{background:#fff4ce;color:#986f0b}
+.status-red{background:#fde7e9;color:#d83b01}
+.bar-chart{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.bar-row{display:flex;align-items:center;gap:8px}
+.bar-label{width:80px;font-size:.8em;text-align:right;color:#605e5c}
+.bar-track{flex:1;height:22px;background:#edebe9;border-radius:4px;overflow:hidden;position:relative}
+.bar-fill{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:8px;font-size:.72em;color:#fff;font-weight:600;transition:width .6s ease}
+.bar-fill.teal{background:#1a7a7a}
+.bar-fill.dark{background:#0d5f5f}
+@media(max-width:768px){.two-col{grid-template-columns:1fr}.kpi-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<div class="header">
+    <h1>Clinical Department Dashboard</h1>
+    <span class="badge">Live</span>
+    <span style="margin-left:auto;font-size:.8em;color:#605e5c">Last updated: March 4, 2026</span>
+</div>
+
+<div class="kpi-grid">
+    <div class="kpi-card">
+        <div class="kpi-value">47</div>
+        <div class="kpi-label">Active Caseload</div>
+        <div class="kpi-sub">IOP clients</div>
+    </div>
+    <div class="kpi-card success">
+        <div class="kpi-value">91%</div>
+        <div class="kpi-label">Note Completion</div>
+        <div class="kpi-sub">Target: 90%</div>
+    </div>
+    <div class="kpi-card warn">
+        <div class="kpi-value">88%</div>
+        <div class="kpi-label">Tx Plan Compliance</div>
+        <div class="kpi-sub">Target: 95%</div>
+    </div>
+    <div class="kpi-card success">
+        <div class="kpi-value">50%</div>
+        <div class="kpi-label">Successful Discharge</div>
+        <div class="kpi-sub">3 of 6 recent</div>
+    </div>
+    <div class="kpi-card success">
+        <div class="kpi-value">-8.3</div>
+        <div class="kpi-label">Avg PHQ-9 Change</div>
+        <div class="kpi-sub">Intake → Discharge</div>
+    </div>
+    <div class="kpi-card success">
+        <div class="kpi-value">-6.7</div>
+        <div class="kpi-label">Avg GAD-7 Change</div>
+        <div class="kpi-sub">Intake → Discharge</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-value">42d</div>
+        <div class="kpi-label">Avg LOS</div>
+        <div class="kpi-sub">Target: 30-45 days</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-value">10</div>
+        <div class="kpi-label">Groups/Week</div>
+        <div class="kpi-sub">Mon-Fri, 2/day</div>
+    </div>
+</div>
+
+<div class="two-col">
+    <div class="section">
+        <h2>Group Attendance — This Week</h2>
+        <div class="bar-chart">
+            <div class="bar-row"><span class="bar-label">CBT Skills</span><div class="bar-track"><div class="bar-fill teal" style="width:83%">10/12</div></div></div>
+            <div class="bar-row"><span class="bar-label">Relapse Prev</span><div class="bar-track"><div class="bar-fill teal" style="width:67%">8/12</div></div></div>
+            <div class="bar-row"><span class="bar-label">DBT Distress</span><div class="bar-track"><div class="bar-fill teal" style="width:92%">11/12</div></div></div>
+            <div class="bar-row"><span class="bar-label">Process</span><div class="bar-track"><div class="bar-fill dark" style="width:90%">9/10</div></div></div>
+            <div class="bar-row"><span class="bar-label">Psychoed</span><div class="bar-track"><div class="bar-fill teal" style="width:80%">12/15</div></div></div>
+            <div class="bar-row"><span class="bar-label">Mindfulness</span><div class="bar-track"><div class="bar-fill dark" style="width:60%">9/15</div></div></div>
+            <div class="bar-row"><span class="bar-label">CBT Anxiety</span><div class="bar-track"><div class="bar-fill teal" style="width:75%">9/12</div></div></div>
+            <div class="bar-row"><span class="bar-label">Life Skills</span><div class="bar-track"><div class="bar-fill dark" style="width:83%">10/12</div></div></div>
+            <div class="bar-row"><span class="bar-label">DBT Emotion</span><div class="bar-track"><div class="bar-fill teal" style="width:92%">11/12</div></div></div>
+            <div class="bar-row"><span class="bar-label">RP Wrap-Up</span><div class="bar-track"><div class="bar-fill dark" style="width:75%">9/12</div></div></div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Treatment Plan Review Status</h2>
+        <table>
+            <thead><tr><th>Client</th><th>Therapist</th><th>Next Due</th><th>Status</th></tr></thead>
+            <tbody>
+                <tr><td>C-2026-027</td><td>A. Nguyen</td><td>Feb 28</td><td><span class="status status-red">Overdue</span></td></tr>
+                <tr><td>C-2026-025</td><td>S. Thompson</td><td>Mar 10</td><td><span class="status status-yellow">Due This Week</span></td></tr>
+                <tr><td>C-2026-033</td><td>R. Davis</td><td>Mar 5</td><td><span class="status status-yellow">Due This Week</span></td></tr>
+                <tr><td>C-2026-022</td><td>R. Davis</td><td>Mar 20</td><td><span class="status status-green">Current</span></td></tr>
+                <tr><td>C-2026-020</td><td>J. Martinez</td><td>Mar 24</td><td><span class="status status-green">Current</span></td></tr>
+                <tr><td>C-2026-030</td><td>J. Martinez</td><td>Mar 28</td><td><span class="status status-green">Current</span></td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="section">
+    <h2>Recent Client Outcomes (PHQ-9 Improvement)</h2>
+    <table>
+        <thead><tr><th>Client</th><th>Admit</th><th>Discharge</th><th>PHQ-9 In</th><th>PHQ-9 Out</th><th>Change</th><th>Outcome</th></tr></thead>
+        <tbody>
+            <tr><td>C-2026-001</td><td>Dec 15</td><td>Feb 10</td><td>18</td><td>8</td><td style="color:#107c10;font-weight:700">-10</td><td><span class="status status-green">Successful</span></td></tr>
+            <tr><td>C-2026-005</td><td>Jan 6</td><td>Feb 28</td><td>22</td><td>12</td><td style="color:#107c10;font-weight:700">-10</td><td><span class="status status-green">Successful</span></td></tr>
+            <tr><td>C-2026-018</td><td>Feb 10</td><td>Mar 3</td><td>20</td><td>10</td><td style="color:#107c10;font-weight:700">-10</td><td><span class="status status-green">Successful</span></td></tr>
+            <tr><td>C-2026-008</td><td>Jan 13</td><td>Feb 22</td><td>16</td><td>16</td><td style="color:#986f0b">0</td><td><span class="status status-red">AMA</span></td></tr>
+            <tr><td>C-2026-012</td><td>Jan 20</td><td>Feb 5</td><td>24</td><td>24</td><td style="color:#986f0b">0</td><td><span class="status status-yellow">Referred Up</span></td></tr>
+            <tr><td>C-2026-015</td><td>Feb 3</td><td>Feb 17</td><td>14</td><td>14</td><td style="color:#986f0b">0</td><td><span class="status status-yellow">Administrative</span></td></tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

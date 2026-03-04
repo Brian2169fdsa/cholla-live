@@ -1,0 +1,500 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// Cholla Behavioral Health — IOP Operations Hub
+// Power BI DAX Measures
+// ═══════════════════════════════════════════════════════════════════════════
+// Data Source: SharePoint Online Lists
+// Site: https://chollabehavioralhealth.sharepoint.com/sites/iop-hub-dev
+// Prepared by Manage AI — March 2026
+// ═══════════════════════════════════════════════════════════════════════════
+
+
+// ─────────────────────────────────────────────────────────────────────────
+// CALCULATED TABLE: DateTable
+// ─────────────────────────────────────────────────────────────────────────
+
+DateTable =
+ADDCOLUMNS(
+    CALENDAR(DATE(2025,1,1), DATE(2026,12,31)),
+    "Year", YEAR([Date]),
+    "Month", MONTH([Date]),
+    "MonthName", FORMAT([Date], "MMMM"),
+    "MonthShort", FORMAT([Date], "MMM"),
+    "MonthYear", FORMAT([Date], "MMM YYYY"),
+    "Quarter", "Q" & CEILING(MONTH([Date])/3, 1),
+    "QuarterYear", "Q" & CEILING(MONTH([Date])/3, 1) & " " & YEAR([Date]),
+    "WeekNum", WEEKNUM([Date]),
+    "DayOfWeek", WEEKDAY([Date]),
+    "DayName", FORMAT([Date], "dddd"),
+    "IsCurrentMonth", IF(MONTH([Date]) = MONTH(TODAY()) && YEAR([Date]) = YEAR(TODAY()), TRUE, FALSE),
+    "IsCurrentQuarter", IF(
+        CEILING(MONTH([Date])/3, 1) = CEILING(MONTH(TODAY())/3, 1)
+        && YEAR([Date]) = YEAR(TODAY()), TRUE, FALSE
+    ),
+    "IsPreviousMonth", IF(
+        MONTH([Date]) = MONTH(EDATE(TODAY(), -1))
+        && YEAR([Date]) = YEAR(EDATE(TODAY(), -1)), TRUE, FALSE
+    ),
+    "MonthSort", YEAR([Date]) * 100 + MONTH([Date])
+)
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// CENSUS MEASURES
+// ═══════════════════════════════════════════════════════════════════════════
+
+Active Census =
+SUM('Census Tracker'[ActiveCensus])
+
+Slot Capacity = 60
+
+Utilization Rate =
+DIVIDE([Active Census], [Slot Capacity], 0)
+
+New Admits WTD =
+SUM('Census Tracker'[NewAdmits])
+
+Discharges WTD =
+SUM('Census Tracker'[Discharges])
+
+Net Census Change =
+[New Admits WTD] - [Discharges WTD]
+
+Average Length of Stay =
+SUM('Census Tracker'[ALOS])
+
+Census Utilization Status =
+SWITCH(
+    TRUE(),
+    [Utilization Rate] >= 0.95, "At Capacity",
+    [Utilization Rate] >= 0.85, "On Track",
+    [Utilization Rate] >= 0.70, "Below Target",
+    "Low Census"
+)
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// REVENUE MEASURES
+// ═══════════════════════════════════════════════════════════════════════════
+
+Revenue MTD =
+CALCULATE(
+    SUM('Revenue Tracker'[Revenue]),
+    DateTable[IsCurrentMonth] = TRUE
+)
+
+Revenue Previous Month =
+CALCULATE(
+    SUM('Revenue Tracker'[Revenue]),
+    DateTable[IsPreviousMonth] = TRUE
+)
+
+Revenue Target = 250000
+
+Revenue Pacing =
+DIVIDE([Revenue MTD], [Revenue Target], 0)
+
+Revenue MoM Change =
+DIVIDE([Revenue MTD] - [Revenue Previous Month], [Revenue Previous Month], 0)
+
+Total Claims =
+SUM('Revenue Tracker'[ClaimCount])
+
+Total Denials =
+SUM('Revenue Tracker'[DenialCount])
+
+Clean Claim Rate =
+DIVIDE(
+    SUM('Revenue Tracker'[ClaimCount]) - SUM('Revenue Tracker'[DenialCount]),
+    SUM('Revenue Tracker'[ClaimCount]),
+    0
+)
+
+Revenue Per Payer =
+SUMMARIZE(
+    'Revenue Tracker',
+    'Revenue Tracker'[Payer],
+    "TotalRevenue", SUM('Revenue Tracker'[Revenue])
+)
+
+AHCCCS Revenue Pct =
+DIVIDE(
+    CALCULATE(SUM('Revenue Tracker'[Revenue]),
+        'Revenue Tracker'[Payer] IN {"AHCCCS Mercy Care", "AHCCCS UHCCP"}),
+    SUM('Revenue Tracker'[Revenue]),
+    0
+)
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ADMISSIONS MEASURES
+// ═══════════════════════════════════════════════════════════════════════════
+
+Referrals MTD =
+CALCULATE(
+    COUNTROWS('Admissions Pipeline'),
+    DateTable[IsCurrentMonth] = TRUE
+)
+
+Admits MTD =
+CALCULATE(
+    COUNTROWS('Admissions Pipeline'),
+    'Admissions Pipeline'[Status] = "Admitted",
+    DateTable[IsCurrentMonth] = TRUE
+)
+
+Conversion Rate =
+DIVIDE([Admits MTD], [Referrals MTD], 0)
+
+Active Pipeline =
+CALCULATE(
+    COUNTROWS('Admissions Pipeline'),
+    'Admissions Pipeline'[Status] = "Active"
+)
+
+Pipeline by Stage =
+SUMMARIZE(
+    'Admissions Pipeline',
+    'Admissions Pipeline'[Stage],
+    "Count", COUNTROWS('Admissions Pipeline')
+)
+
+Lost Referrals MTD =
+CALCULATE(
+    COUNTROWS('Admissions Pipeline'),
+    'Admissions Pipeline'[Status] = "Lost",
+    DateTable[IsCurrentMonth] = TRUE
+)
+
+Avg Time to Admit =
+AVERAGEX(
+    FILTER('Admissions Pipeline', 'Admissions Pipeline'[Status] = "Admitted"),
+    DATEDIFF('Admissions Pipeline'[ReferralDate], 'Admissions Pipeline'[AdmitDate], DAY)
+)
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// INSURANCE VERIFICATION MEASURES
+// ═══════════════════════════════════════════════════════════════════════════
+
+VOB Pending Count =
+CALCULATE(
+    COUNTROWS('Insurance Verification Tracker'),
+    'Insurance Verification Tracker'[Status] = "Pending"
+)
+
+VOB Verified Count =
+CALCULATE(
+    COUNTROWS('Insurance Verification Tracker'),
+    'Insurance Verification Tracker'[Status] = "Verified"
+)
+
+VOB Issue Count =
+CALCULATE(
+    COUNTROWS('Insurance Verification Tracker'),
+    'Insurance Verification Tracker'[Status] IN {"Issue", "Denied"}
+)
+
+Prior Auth Approval Rate =
+DIVIDE(
+    CALCULATE(COUNTROWS('Insurance Verification Tracker'),
+        'Insurance Verification Tracker'[PriorAuthStatus] = "Approved"),
+    CALCULATE(COUNTROWS('Insurance Verification Tracker'),
+        'Insurance Verification Tracker'[PriorAuthRequired] = TRUE),
+    0
+)
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// COMPLIANCE MEASURES
+// ═══════════════════════════════════════════════════════════════════════════
+
+Compliance Score = 94
+
+Open CAPs =
+CALCULATE(
+    COUNTROWS('Corrective Action Plans'),
+    'Corrective Action Plans'[Status] IN {"Open", "In Progress"}
+)
+
+Overdue CAPs =
+CALCULATE(
+    COUNTROWS('Corrective Action Plans'),
+    'Corrective Action Plans'[DueDate] < TODAY(),
+    'Corrective Action Plans'[Status] IN {"Open", "In Progress"}
+)
+
+Overdue Audits =
+CALCULATE(
+    COUNTROWS('Compliance Audit Calendar'),
+    'Compliance Audit Calendar'[Status] = "Overdue"
+)
+
+Upcoming Audits 30d =
+CALCULATE(
+    COUNTROWS('Compliance Audit Calendar'),
+    'Compliance Audit Calendar'[AuditDate] >= TODAY(),
+    'Compliance Audit Calendar'[AuditDate] <= TODAY() + 30,
+    'Compliance Audit Calendar'[Status] <> "Complete"
+)
+
+Upcoming Audits 90d =
+CALCULATE(
+    COUNTROWS('Compliance Audit Calendar'),
+    'Compliance Audit Calendar'[AuditDate] >= TODAY(),
+    'Compliance Audit Calendar'[AuditDate] <= TODAY() + 90,
+    'Compliance Audit Calendar'[Status] <> "Complete"
+)
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// STAFF / HR MEASURES
+// ═══════════════════════════════════════════════════════════════════════════
+
+Total Staff =
+COUNTROWS('Staff Credential Tracker')
+
+Credentials Current =
+CALCULATE(
+    COUNTROWS('Staff Credential Tracker'),
+    'Staff Credential Tracker'[Status] = "Current"
+)
+
+Credentials Expiring 30d =
+CALCULATE(
+    COUNTROWS('Staff Credential Tracker'),
+    'Staff Credential Tracker'[LicenseExpiration] <= TODAY() + 30,
+    'Staff Credential Tracker'[LicenseExpiration] >= TODAY()
+)
+
+Credentials Expired =
+CALCULATE(
+    COUNTROWS('Staff Credential Tracker'),
+    'Staff Credential Tracker'[Status] = "Expired"
+)
+
+Credentials Action Required =
+CALCULATE(
+    COUNTROWS('Staff Credential Tracker'),
+    'Staff Credential Tracker'[Status] = "Action Required"
+)
+
+Credential Compliance Rate =
+DIVIDE(
+    CALCULATE(COUNTROWS('Staff Credential Tracker'),
+        'Staff Credential Tracker'[Status] = "Current"),
+    [Total Staff],
+    0
+)
+
+Open Positions Count =
+CALCULATE(
+    COUNTROWS('Open Positions'),
+    'Open Positions'[Status] IN {"Open", "Interviewing"}
+)
+
+Total Payroll Current Period =
+CALCULATE(
+    SUM('Payroll Tracker'[GrossPay]),
+    'Payroll Tracker'[Status] = "Processed"
+)
+
+Total OT Hours =
+SUM('Payroll Tracker'[OTHours])
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// CLINICAL MEASURES
+// ═══════════════════════════════════════════════════════════════════════════
+
+Note Completion Rate = 0.91
+
+Treatment Plan Compliance = 0.88
+
+Discharge Success Rate =
+DIVIDE(
+    CALCULATE(
+        COUNTROWS('Client Outcomes Tracker'),
+        'Client Outcomes Tracker'[CompletionStatus] = "Successful Completion"
+    ),
+    COUNTROWS('Client Outcomes Tracker'),
+    0
+)
+
+AMA Rate =
+DIVIDE(
+    CALCULATE(
+        COUNTROWS('Client Outcomes Tracker'),
+        'Client Outcomes Tracker'[CompletionStatus] = "AMA"
+    ),
+    COUNTROWS('Client Outcomes Tracker'),
+    0
+)
+
+Avg PHQ9 Improvement =
+AVERAGEX(
+    'Client Outcomes Tracker',
+    'Client Outcomes Tracker'[PHQ9Intake] - 'Client Outcomes Tracker'[PHQ9Discharge]
+)
+
+Avg GAD7 Improvement =
+AVERAGEX(
+    'Client Outcomes Tracker',
+    'Client Outcomes Tracker'[GAD7Intake] - 'Client Outcomes Tracker'[GAD7Discharge]
+)
+
+Avg LOS Days =
+AVERAGEX(
+    FILTER('Client Outcomes Tracker', NOT(ISBLANK('Client Outcomes Tracker'[DischargeDate]))),
+    DATEDIFF('Client Outcomes Tracker'[AdmitDate], 'Client Outcomes Tracker'[DischargeDate], DAY)
+)
+
+Treatment Plans Overdue =
+CALCULATE(
+    COUNTROWS('Treatment Plan Review Dates'),
+    'Treatment Plan Review Dates'[Status] = "Overdue"
+)
+
+Treatment Plans Due This Week =
+CALCULATE(
+    COUNTROWS('Treatment Plan Review Dates'),
+    'Treatment Plan Review Dates'[Status] = "Due This Week"
+)
+
+UDS Positive Rate =
+DIVIDE(
+    CALCULATE(COUNTROWS('UDS Tracking Log'), 'UDS Tracking Log'[Result] = "Positive"),
+    CALCULATE(COUNTROWS('UDS Tracking Log'), 'UDS Tracking Log'[Result] <> "Not Tested"),
+    0
+)
+
+Avg Group Attendance =
+AVERAGE('Group Attendance Log'[Attendees])
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// REFERRAL PARTNER MEASURES
+// ═══════════════════════════════════════════════════════════════════════════
+
+Active Partners =
+CALCULATE(
+    COUNTROWS('Referral Partner Tracker'),
+    'Referral Partner Tracker'[Status] = "Active"
+)
+
+Total Partner Referrals =
+SUM('Referral Partner Tracker'[ReferralsMTD])
+
+Total Partner Admits =
+SUM('Referral Partner Tracker'[AdmitsMTD])
+
+Partner Conversion Rate =
+DIVIDE(
+    SUM('Referral Partner Tracker'[AdmitsMTD]),
+    SUM('Referral Partner Tracker'[ReferralsMTD]),
+    0
+)
+
+New Partners MTD =
+CALCULATE(
+    COUNTROWS('Referral Partner Tracker'),
+    'Referral Partner Tracker'[Status] = "New Partner"
+)
+
+Partners Needing Follow Up =
+CALCULATE(
+    COUNTROWS('Referral Partner Tracker'),
+    'Referral Partner Tracker'[Status] = "Follow-Up"
+)
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// MARKETING MEASURES
+// ═══════════════════════════════════════════════════════════════════════════
+
+Total Marketing Spend =
+SUM('Marketing Campaigns'[SpendMTD])
+
+Total Leads =
+SUM('Marketing Campaigns'[Leads])
+
+Blended CPL =
+DIVIDE([Total Marketing Spend], [Total Leads], 0)
+
+Total Marketing Admits =
+SUM('Marketing Campaigns'[Admits])
+
+Blended CPA =
+DIVIDE([Total Marketing Spend], [Total Marketing Admits], 0)
+
+Lead to Admit Rate =
+DIVIDE([Total Marketing Admits], [Total Leads], 0)
+
+Active Campaigns =
+CALCULATE(
+    COUNTROWS('Marketing Campaigns'),
+    'Marketing Campaigns'[Status] = "Live"
+)
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// BILLING DENIALS MEASURES
+// ═══════════════════════════════════════════════════════════════════════════
+
+Total Denials Amount =
+SUM('Billing Denials'[Amount])
+
+Appeals Pending =
+CALCULATE(
+    COUNTROWS('Billing Denials'),
+    'Billing Denials'[AppealStatus] = "Appeal Filed"
+)
+
+Appeals Won =
+CALCULATE(
+    COUNTROWS('Billing Denials'),
+    'Billing Denials'[AppealStatus] = "Won"
+)
+
+Appeal Win Rate =
+DIVIDE(
+    [Appeals Won],
+    CALCULATE(COUNTROWS('Billing Denials'),
+        'Billing Denials'[AppealStatus] IN {"Won", "Lost"}),
+    0
+)
+
+Amount at Risk =
+CALCULATE(
+    SUM('Billing Denials'[Amount]),
+    'Billing Denials'[AppealStatus] = "Appeal Filed"
+)
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// TRAINING MEASURES
+// ═══════════════════════════════════════════════════════════════════════════
+
+Training Current Count =
+CALCULATE(
+    COUNTROWS('Employee Training Log'),
+    'Employee Training Log'[Status] = "Current"
+)
+
+Training Due Soon Count =
+CALCULATE(
+    COUNTROWS('Employee Training Log'),
+    'Employee Training Log'[Status] = "Due Soon"
+)
+
+Training Overdue Count =
+CALCULATE(
+    COUNTROWS('Employee Training Log'),
+    'Employee Training Log'[Status] = "Overdue"
+)
+
+Training Compliance Rate =
+DIVIDE(
+    [Training Current Count],
+    COUNTROWS('Employee Training Log'),
+    0
+)

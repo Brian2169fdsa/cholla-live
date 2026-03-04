@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marketing KPIs — Cholla Behavioral Health</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,sans-serif;background:#f5f5f5;color:#323130;padding:20px;line-height:1.5}
+.header{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:12px;border-bottom:3px solid #1a7a7a}
+.header h1{font-size:1.4em;color:#0d5f5f}
+.header .badge{background:#1a7a7a;color:#fff;font-size:.7em;padding:3px 10px;border-radius:12px}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:24px}
+.kpi-card{background:#fff;border-radius:8px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.1);border-top:3px solid #1a7a7a;text-align:center}
+.kpi-card.success{border-top-color:#107c10}
+.kpi-card.warn{border-top-color:#986f0b}
+.kpi-value{font-size:2.2em;font-weight:700;color:#1a7a7a;line-height:1.1}
+.kpi-card.success .kpi-value{color:#107c10}
+.kpi-card.warn .kpi-value{color:#986f0b}
+.kpi-label{font-size:.78em;color:#605e5c;text-transform:uppercase;letter-spacing:.5px;margin-top:4px}
+.kpi-sub{font-size:.72em;color:#a19f9d;margin-top:2px}
+.section{background:#fff;border-radius:8px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.1);margin-bottom:20px}
+.section h2{font-size:1.1em;color:#0d5f5f;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #edebe9}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+table{border-collapse:collapse;width:100%;font-size:.85em}
+th{background:#1a7a7a;color:#fff;padding:8px 12px;text-align:left;font-weight:600}
+td{padding:8px 12px;border-bottom:1px solid #edebe9}
+tr:hover td{background:#f2f9f9}
+.status{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.75em;font-weight:600}
+.status-green{background:#dff6dd;color:#107c10}
+.bar-chart{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.bar-row{display:flex;align-items:center;gap:8px}
+.bar-label{width:100px;font-size:.8em;text-align:right;color:#605e5c}
+.bar-track{flex:1;height:22px;background:#edebe9;border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:8px;font-size:.72em;color:#fff;font-weight:600}
+@media(max-width:768px){.two-col{grid-template-columns:1fr}.kpi-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<div class="header">
+    <h1>Marketing Department Dashboard</h1>
+    <span class="badge">Live</span>
+    <span style="margin-left:auto;font-size:.8em;color:#605e5c">Last updated: March 4, 2026</span>
+</div>
+
+<div class="kpi-grid">
+    <div class="kpi-card">
+        <div class="kpi-value">$5,000</div>
+        <div class="kpi-label">Total Spend MTD</div>
+        <div class="kpi-sub">6 active campaigns</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-value">68</div>
+        <div class="kpi-label">Total Leads</div>
+        <div class="kpi-sub">All channels</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-value">$74</div>
+        <div class="kpi-label">Blended CPL</div>
+        <div class="kpi-sub">Cost per lead</div>
+    </div>
+    <div class="kpi-card success">
+        <div class="kpi-value">18</div>
+        <div class="kpi-label">Marketing Admits</div>
+        <div class="kpi-sub">Attributed admits</div>
+    </div>
+    <div class="kpi-card success">
+        <div class="kpi-value">$278</div>
+        <div class="kpi-label">Blended CPA</div>
+        <div class="kpi-sub">Cost per admit</div>
+    </div>
+    <div class="kpi-card success">
+        <div class="kpi-value">26%</div>
+        <div class="kpi-label">Lead-to-Admit</div>
+        <div class="kpi-sub">Conversion rate</div>
+    </div>
+</div>
+
+<div class="two-col">
+    <div class="section">
+        <h2>Spend by Channel</h2>
+        <div class="bar-chart">
+            <div class="bar-row"><span class="bar-label">Google Ads</span><div class="bar-track"><div class="bar-fill" style="width:56%;background:#1a7a7a">$2,800</div></div></div>
+            <div class="bar-row"><span class="bar-label">Social</span><div class="bar-track"><div class="bar-fill" style="width:24%;background:#0d5f5f">$1,200</div></div></div>
+            <div class="bar-row"><span class="bar-label">SEO</span><div class="bar-track"><div class="bar-fill" style="width:10%;background:#52a8a8">$500</div></div></div>
+            <div class="bar-row"><span class="bar-label">Community</span><div class="bar-track"><div class="bar-fill" style="width:6%;background:#3aa8a8">$300</div></div></div>
+            <div class="bar-row"><span class="bar-label">Partners</span><div class="bar-track"><div class="bar-fill" style="width:4%;background:#176e6e">$200</div></div></div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>CPL by Channel</h2>
+        <div class="bar-chart">
+            <div class="bar-row"><span class="bar-label">Google Ads</span><div class="bar-track"><div class="bar-fill" style="width:100%;background:#d83b01">$156</div></div></div>
+            <div class="bar-row"><span class="bar-label">Social</span><div class="bar-track"><div class="bar-fill" style="width:96%;background:#986f0b">$150</div></div></div>
+            <div class="bar-row"><span class="bar-label">Community</span><div class="bar-track"><div class="bar-fill" style="width:38%;background:#52a8a8">$60</div></div></div>
+            <div class="bar-row"><span class="bar-label">SEO</span><div class="bar-track"><div class="bar-fill" style="width:27%;background:#107c10">$42</div></div></div>
+            <div class="bar-row"><span class="bar-label">Partners</span><div class="bar-track"><div class="bar-fill" style="width:6%;background:#107c10">$9</div></div></div>
+        </div>
+    </div>
+</div>
+
+<div class="section">
+    <h2>Campaign Performance Detail</h2>
+    <table>
+        <thead><tr><th>Campaign</th><th>Channel</th><th style="text-align:right">Spend</th><th style="text-align:right">Leads</th><th style="text-align:right">CPL</th><th style="text-align:right">Admits</th><th style="text-align:right">CPA</th><th>Status</th></tr></thead>
+        <tbody>
+            <tr><td>Partner Referral Program</td><td>Referral Partners</td><td style="text-align:right">$200</td><td style="text-align:right">23</td><td style="text-align:right">$9</td><td style="text-align:right">8</td><td style="text-align:right">$25</td><td><span class="status status-green">Live</span></td></tr>
+            <tr><td>SEO Content Program</td><td>SEO/Organic</td><td style="text-align:right">$500</td><td style="text-align:right">12</td><td style="text-align:right">$42</td><td style="text-align:right">3</td><td style="text-align:right">$167</td><td><span class="status status-green">Live</span></td></tr>
+            <tr><td>IOP Awareness — Google</td><td>Google Ads</td><td style="text-align:right">$2,800</td><td style="text-align:right">18</td><td style="text-align:right">$156</td><td style="text-align:right">4</td><td style="text-align:right">$700</td><td><span class="status status-green">Live</span></td></tr>
+            <tr><td>Social — Recovery Stories</td><td>Facebook/Instagram</td><td style="text-align:right">$1,200</td><td style="text-align:right">8</td><td style="text-align:right">$150</td><td style="text-align:right">2</td><td style="text-align:right">$600</td><td><span class="status status-green">Live</span></td></tr>
+            <tr><td>Community Outreach</td><td>Community Events</td><td style="text-align:right">$300</td><td style="text-align:right">5</td><td style="text-align:right">$60</td><td style="text-align:right">1</td><td style="text-align:right">$300</td><td><span class="status status-green">Live</span></td></tr>
+            <tr><td>LegitScript Directory</td><td>Directories</td><td style="text-align:right">$0</td><td style="text-align:right">2</td><td style="text-align:right">$0</td><td style="text-align:right">0</td><td style="text-align:right">—</td><td><span class="status status-green">Live</span></td></tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

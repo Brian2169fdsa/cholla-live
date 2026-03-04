@@ -1,0 +1,461 @@
+{
+  "name": "Cholla IOP Operations Hub",
+  "compatibilityLevel": 1567,
+  "model": {
+    "culture": "en-US",
+    "dataSources": [
+      {
+        "type": "structured",
+        "name": "SharePoint Online",
+        "connectionDetails": {
+          "protocol": "sharepoint",
+          "address": {
+            "url": "https://chollabehavioralhealth.sharepoint.com/sites/iop-hub-dev"
+          }
+        },
+        "credential": {
+          "AuthenticationKind": "OAuth2",
+          "kind": "SharePointOnline"
+        }
+      }
+    ],
+    "tables": [
+      {
+        "name": "DateTable",
+        "columns": [
+          { "name": "Date", "dataType": "dateTime", "isKey": true, "sourceColumn": "Date" },
+          { "name": "Year", "dataType": "int64", "sourceColumn": "Year" },
+          { "name": "Month", "dataType": "int64", "sourceColumn": "Month" },
+          { "name": "MonthName", "dataType": "string", "sourceColumn": "MonthName" },
+          { "name": "MonthShort", "dataType": "string", "sourceColumn": "MonthShort" },
+          { "name": "MonthYear", "dataType": "string", "sourceColumn": "MonthYear" },
+          { "name": "Quarter", "dataType": "string", "sourceColumn": "Quarter" },
+          { "name": "QuarterYear", "dataType": "string", "sourceColumn": "QuarterYear" },
+          { "name": "WeekNum", "dataType": "int64", "sourceColumn": "WeekNum" },
+          { "name": "DayOfWeek", "dataType": "int64", "sourceColumn": "DayOfWeek" },
+          { "name": "DayName", "dataType": "string", "sourceColumn": "DayName" },
+          { "name": "IsCurrentMonth", "dataType": "boolean", "sourceColumn": "IsCurrentMonth" },
+          { "name": "IsCurrentQuarter", "dataType": "boolean", "sourceColumn": "IsCurrentQuarter" },
+          { "name": "IsPreviousMonth", "dataType": "boolean", "sourceColumn": "IsPreviousMonth" },
+          { "name": "MonthSort", "dataType": "int64", "sourceColumn": "MonthSort" }
+        ],
+        "partitions": [
+          {
+            "name": "DateTable",
+            "mode": "import",
+            "source": {
+              "type": "calculated",
+              "expression": "ADDCOLUMNS(CALENDAR(DATE(2025,1,1), DATE(2026,12,31)), \"Year\", YEAR([Date]), \"Month\", MONTH([Date]), \"MonthName\", FORMAT([Date], \"MMMM\"), \"MonthShort\", FORMAT([Date], \"MMM\"), \"MonthYear\", FORMAT([Date], \"MMM YYYY\"), \"Quarter\", \"Q\" & CEILING(MONTH([Date])/3, 1), \"QuarterYear\", \"Q\" & CEILING(MONTH([Date])/3, 1) & \" \" & YEAR([Date]), \"WeekNum\", WEEKNUM([Date]), \"DayOfWeek\", WEEKDAY([Date]), \"DayName\", FORMAT([Date], \"dddd\"), \"IsCurrentMonth\", IF(MONTH([Date]) = MONTH(TODAY()) && YEAR([Date]) = YEAR(TODAY()), TRUE, FALSE), \"IsCurrentQuarter\", IF(CEILING(MONTH([Date])/3, 1) = CEILING(MONTH(TODAY())/3, 1) && YEAR([Date]) = YEAR(TODAY()), TRUE, FALSE), \"IsPreviousMonth\", IF(MONTH([Date]) = MONTH(EDATE(TODAY(), -1)) && YEAR([Date]) = YEAR(EDATE(TODAY(), -1)), TRUE, FALSE), \"MonthSort\", YEAR([Date]) * 100 + MONTH([Date]))"
+            }
+          }
+        ]
+      },
+      {
+        "name": "CensusTracker",
+        "columns": [
+          { "name": "Title", "dataType": "string", "sourceColumn": "Title" },
+          { "name": "ActiveCensus", "dataType": "int64", "sourceColumn": "ActiveCensus" },
+          { "name": "Capacity", "dataType": "int64", "sourceColumn": "Capacity" },
+          { "name": "NewAdmits", "dataType": "int64", "sourceColumn": "NewAdmits" },
+          { "name": "Discharges", "dataType": "int64", "sourceColumn": "Discharges" },
+          { "name": "ALOS", "dataType": "int64", "sourceColumn": "ALOS" },
+          { "name": "Status", "dataType": "string", "sourceColumn": "Status" },
+          { "name": "Notes", "dataType": "string", "sourceColumn": "Notes" },
+          { "name": "LastUpdated", "dataType": "dateTime", "sourceColumn": "LastUpdated" }
+        ],
+        "partitions": [
+          {
+            "name": "CensusTracker",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let Source = SharePoint.Tables(\"https://chollabehavioralhealth.sharepoint.com/sites/iop-hub-dev\", [Implementation=\"2.0\"]), CensusTracker = Source{[Title=\"Census Tracker\"]}[Items] in CensusTracker"
+            }
+          }
+        ]
+      },
+      {
+        "name": "IncidentReports",
+        "columns": [
+          { "name": "IncidentID", "dataType": "string", "sourceColumn": "IncidentID" },
+          { "name": "IncidentDate", "dataType": "dateTime", "sourceColumn": "IncidentDate" },
+          { "name": "Category", "dataType": "string", "sourceColumn": "Category" },
+          { "name": "Severity", "dataType": "string", "sourceColumn": "Severity" },
+          { "name": "Description", "dataType": "string", "sourceColumn": "Description" },
+          { "name": "Status", "dataType": "string", "sourceColumn": "Status" },
+          { "name": "ResolutionDate", "dataType": "dateTime", "sourceColumn": "ResolutionDate" },
+          { "name": "CorrectiveAction", "dataType": "string", "sourceColumn": "CorrectiveAction" }
+        ],
+        "partitions": [
+          {
+            "name": "IncidentReports",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let Source = SharePoint.Tables(\"https://chollabehavioralhealth.sharepoint.com/sites/iop-hub-dev\", [Implementation=\"2.0\"]), IncidentReports = Source{[Title=\"Incident Reports\"]}[Items] in IncidentReports"
+            }
+          }
+        ]
+      },
+      {
+        "name": "StaffCredentialTracker",
+        "columns": [
+          { "name": "StaffName", "dataType": "string", "sourceColumn": "StaffName" },
+          { "name": "Role", "dataType": "string", "sourceColumn": "Role" },
+          { "name": "LicenseNumber", "dataType": "string", "sourceColumn": "LicenseNumber" },
+          { "name": "LicenseExpiration", "dataType": "dateTime", "sourceColumn": "LicenseExpiration" },
+          { "name": "FingerprintClearance", "dataType": "dateTime", "sourceColumn": "FingerprintClearance" },
+          { "name": "CPRExpiration", "dataType": "dateTime", "sourceColumn": "CPRExpiration" },
+          { "name": "HIPAATrainingDate", "dataType": "dateTime", "sourceColumn": "HIPAATrainingDate" },
+          { "name": "FWATrainingDate", "dataType": "dateTime", "sourceColumn": "FWATrainingDate" },
+          { "name": "CulturalCompDate", "dataType": "dateTime", "sourceColumn": "CulturalCompDate" },
+          { "name": "TraumaInformedDate", "dataType": "dateTime", "sourceColumn": "TraumaInformedDate" },
+          { "name": "SupervisionCurrent", "dataType": "boolean", "sourceColumn": "SupervisionCurrent" },
+          { "name": "CEUsCompleted", "dataType": "int64", "sourceColumn": "CEUsCompleted" },
+          { "name": "CEUsRequired", "dataType": "int64", "sourceColumn": "CEUsRequired" },
+          { "name": "Status", "dataType": "string", "sourceColumn": "Status" }
+        ],
+        "partitions": [
+          {
+            "name": "StaffCredentialTracker",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let Source = SharePoint.Tables(\"https://chollabehavioralhealth.sharepoint.com/sites/iop-hub-dev\", [Implementation=\"2.0\"]), StaffCredentialTracker = Source{[Title=\"Staff Credential Tracker\"]}[Items] in StaffCredentialTracker"
+            }
+          }
+        ]
+      },
+      {
+        "name": "CorrectiveActionPlans",
+        "columns": [
+          { "name": "CAPID", "dataType": "string", "sourceColumn": "CAPID" },
+          { "name": "Title", "dataType": "string", "sourceColumn": "Title" },
+          { "name": "Category", "dataType": "string", "sourceColumn": "Category" },
+          { "name": "Source", "dataType": "string", "sourceColumn": "Source" },
+          { "name": "OpenDate", "dataType": "dateTime", "sourceColumn": "OpenDate" },
+          { "name": "DueDate", "dataType": "dateTime", "sourceColumn": "DueDate" },
+          { "name": "Status", "dataType": "string", "sourceColumn": "Status" },
+          { "name": "RootCause", "dataType": "string", "sourceColumn": "RootCause" },
+          { "name": "CorrectiveAction", "dataType": "string", "sourceColumn": "CorrectiveAction" },
+          { "name": "Evidence", "dataType": "string", "sourceColumn": "Evidence" }
+        ],
+        "partitions": [
+          {
+            "name": "CorrectiveActionPlans",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let Source = SharePoint.Tables(\"https://chollabehavioralhealth.sharepoint.com/sites/iop-hub-dev\", [Implementation=\"2.0\"]), CorrectiveActionPlans = Source{[Title=\"Corrective Action Plans\"]}[Items] in CorrectiveActionPlans"
+            }
+          }
+        ]
+      },
+      {
+        "name": "ReferralPartnerTracker",
+        "columns": [
+          { "name": "PartnerName", "dataType": "string", "sourceColumn": "PartnerName" },
+          { "name": "PartnerType", "dataType": "string", "sourceColumn": "PartnerType" },
+          { "name": "Territory", "dataType": "string", "sourceColumn": "Territory" },
+          { "name": "ContactName", "dataType": "string", "sourceColumn": "ContactName" },
+          { "name": "ContactPhone", "dataType": "string", "sourceColumn": "ContactPhone" },
+          { "name": "ReferralsMTD", "dataType": "int64", "sourceColumn": "ReferralsMTD" },
+          { "name": "AdmitsMTD", "dataType": "int64", "sourceColumn": "AdmitsMTD" },
+          { "name": "LastContact", "dataType": "dateTime", "sourceColumn": "LastContact" },
+          { "name": "AgreementOnFile", "dataType": "boolean", "sourceColumn": "AgreementOnFile" },
+          { "name": "Status", "dataType": "string", "sourceColumn": "Status" },
+          { "name": "Notes", "dataType": "string", "sourceColumn": "Notes" }
+        ],
+        "partitions": [
+          {
+            "name": "ReferralPartnerTracker",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let Source = SharePoint.Tables(\"https://chollabehavioralhealth.sharepoint.com/sites/iop-hub-dev\", [Implementation=\"2.0\"]), ReferralPartnerTracker = Source{[Title=\"Referral Partner Tracker\"]}[Items] in ReferralPartnerTracker"
+            }
+          }
+        ]
+      },
+      {
+        "name": "MarketingCampaigns",
+        "columns": [
+          { "name": "CampaignName", "dataType": "string", "sourceColumn": "CampaignName" },
+          { "name": "Channel", "dataType": "string", "sourceColumn": "Channel" },
+          { "name": "SpendMTD", "dataType": "decimal", "sourceColumn": "SpendMTD" },
+          { "name": "Leads", "dataType": "int64", "sourceColumn": "Leads" },
+          { "name": "CPL", "dataType": "decimal", "sourceColumn": "CPL" },
+          { "name": "Admits", "dataType": "int64", "sourceColumn": "Admits" },
+          { "name": "CPA", "dataType": "decimal", "sourceColumn": "CPA" },
+          { "name": "Status", "dataType": "string", "sourceColumn": "Status" },
+          { "name": "StartDate", "dataType": "dateTime", "sourceColumn": "StartDate" },
+          { "name": "Notes", "dataType": "string", "sourceColumn": "Notes" }
+        ],
+        "partitions": [
+          {
+            "name": "MarketingCampaigns",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let Source = SharePoint.Tables(\"https://chollabehavioralhealth.sharepoint.com/sites/iop-hub-dev\", [Implementation=\"2.0\"]), MarketingCampaigns = Source{[Title=\"Marketing Campaigns\"]}[Items] in MarketingCampaigns"
+            }
+          }
+        ]
+      },
+      {
+        "name": "AdmissionsPipeline",
+        "columns": [
+          { "name": "ReferralID", "dataType": "string", "sourceColumn": "ReferralID" },
+          { "name": "ReferralDate", "dataType": "dateTime", "sourceColumn": "ReferralDate" },
+          { "name": "Source", "dataType": "string", "sourceColumn": "Source" },
+          { "name": "SourceDetail", "dataType": "string", "sourceColumn": "SourceDetail" },
+          { "name": "Insurance", "dataType": "string", "sourceColumn": "Insurance" },
+          { "name": "Stage", "dataType": "string", "sourceColumn": "Stage" },
+          { "name": "Status", "dataType": "string", "sourceColumn": "Status" },
+          { "name": "AssessmentDate", "dataType": "dateTime", "sourceColumn": "AssessmentDate" },
+          { "name": "AdmitDate", "dataType": "dateTime", "sourceColumn": "AdmitDate" },
+          { "name": "Notes", "dataType": "string", "sourceColumn": "Notes" }
+        ],
+        "partitions": [
+          {
+            "name": "AdmissionsPipeline",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let Source = SharePoint.Tables(\"https://chollabehavioralhealth.sharepoint.com/sites/iop-hub-dev\", [Implementation=\"2.0\"]), AdmissionsPipeline = Source{[Title=\"Admissions Pipeline\"]}[Items] in AdmissionsPipeline"
+            }
+          }
+        ]
+      },
+      {
+        "name": "InsuranceVerification",
+        "columns": [
+          { "name": "ReferralID", "dataType": "string", "sourceColumn": "ReferralID" },
+          { "name": "ClientInitials", "dataType": "string", "sourceColumn": "ClientInitials" },
+          { "name": "Insurance", "dataType": "string", "sourceColumn": "Insurance" },
+          { "name": "VerificationDate", "dataType": "dateTime", "sourceColumn": "VerificationDate" },
+          { "name": "AHCCCSEligible", "dataType": "boolean", "sourceColumn": "AHCCCSEligible" },
+          { "name": "CoveredDays", "dataType": "int64", "sourceColumn": "CoveredDays" },
+          { "name": "Copay", "dataType": "decimal", "sourceColumn": "Copay" },
+          { "name": "PriorAuthRequired", "dataType": "boolean", "sourceColumn": "PriorAuthRequired" },
+          { "name": "PriorAuthStatus", "dataType": "string", "sourceColumn": "PriorAuthStatus" },
+          { "name": "Status", "dataType": "string", "sourceColumn": "Status" },
+          { "name": "Notes", "dataType": "string", "sourceColumn": "Notes" }
+        ],
+        "partitions": [
+          {
+            "name": "InsuranceVerification",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let Source = SharePoint.Tables(\"https://chollabehavioralhealth.sharepoint.com/sites/iop-hub-dev\", [Implementation=\"2.0\"]), InsuranceVerification = Source{[Title=\"Insurance Verification Tracker\"]}[Items] in InsuranceVerification"
+            }
+          }
+        ]
+      },
+      {
+        "name": "RevenueTracker",
+        "columns": [
+          { "name": "Month", "dataType": "dateTime", "sourceColumn": "Month" },
+          { "name": "Payer", "dataType": "string", "sourceColumn": "Payer" },
+          { "name": "Revenue", "dataType": "decimal", "sourceColumn": "Revenue" },
+          { "name": "ClaimCount", "dataType": "int64", "sourceColumn": "ClaimCount" },
+          { "name": "DenialCount", "dataType": "int64", "sourceColumn": "DenialCount" },
+          { "name": "CleanClaimPct", "dataType": "double", "sourceColumn": "CleanClaimPct" },
+          { "name": "Notes", "dataType": "string", "sourceColumn": "Notes" }
+        ],
+        "partitions": [
+          {
+            "name": "RevenueTracker",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let Source = SharePoint.Tables(\"https://chollabehavioralhealth.sharepoint.com/sites/iop-hub-dev\", [Implementation=\"2.0\"]), RevenueTracker = Source{[Title=\"Revenue Tracker\"]}[Items] in RevenueTracker"
+            }
+          }
+        ]
+      },
+      {
+        "name": "ComplianceAuditCalendar",
+        "columns": [
+          { "name": "Title", "dataType": "string", "sourceColumn": "Title" },
+          { "name": "AuditDate", "dataType": "dateTime", "sourceColumn": "AuditDate" },
+          { "name": "AuditType", "dataType": "string", "sourceColumn": "AuditType" },
+          { "name": "Scope", "dataType": "string", "sourceColumn": "Scope" },
+          { "name": "Status", "dataType": "string", "sourceColumn": "Status" },
+          { "name": "Notes", "dataType": "string", "sourceColumn": "Notes" }
+        ],
+        "partitions": [
+          {
+            "name": "ComplianceAuditCalendar",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let Source = SharePoint.Tables(\"https://chollabehavioralhealth.sharepoint.com/sites/iop-hub-dev\", [Implementation=\"2.0\"]), ComplianceAuditCalendar = Source{[Title=\"Compliance Audit Calendar\"]}[Items] in ComplianceAuditCalendar"
+            }
+          }
+        ]
+      },
+      {
+        "name": "GroupSchedule",
+        "columns": [
+          { "name": "GroupName", "dataType": "string", "sourceColumn": "GroupName" },
+          { "name": "DayOfWeek", "dataType": "string", "sourceColumn": "DayOfWeek" },
+          { "name": "TimeSlot", "dataType": "string", "sourceColumn": "TimeSlot" },
+          { "name": "Facilitator", "dataType": "string", "sourceColumn": "Facilitator" },
+          { "name": "GroupType", "dataType": "string", "sourceColumn": "GroupType" },
+          { "name": "Room", "dataType": "string", "sourceColumn": "Room" },
+          { "name": "MaxParticipants", "dataType": "int64", "sourceColumn": "MaxParticipants" },
+          { "name": "Notes", "dataType": "string", "sourceColumn": "Notes" }
+        ],
+        "partitions": [
+          {
+            "name": "GroupSchedule",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let Source = SharePoint.Tables(\"https://chollabehavioralhealth.sharepoint.com/sites/iop-hub-dev\", [Implementation=\"2.0\"]), GroupSchedule = Source{[Title=\"Group Schedule\"]}[Items] in GroupSchedule"
+            }
+          }
+        ]
+      },
+      {
+        "name": "ClientOutcomesTracker",
+        "columns": [
+          { "name": "ClientID", "dataType": "string", "sourceColumn": "ClientID" },
+          { "name": "AdmitDate", "dataType": "dateTime", "sourceColumn": "AdmitDate" },
+          { "name": "DischargeDate", "dataType": "dateTime", "sourceColumn": "DischargeDate" },
+          { "name": "PHQ9Intake", "dataType": "int64", "sourceColumn": "PHQ9Intake" },
+          { "name": "PHQ9Discharge", "dataType": "int64", "sourceColumn": "PHQ9Discharge" },
+          { "name": "GAD7Intake", "dataType": "int64", "sourceColumn": "GAD7Intake" },
+          { "name": "GAD7Discharge", "dataType": "int64", "sourceColumn": "GAD7Discharge" },
+          { "name": "CompletionStatus", "dataType": "string", "sourceColumn": "CompletionStatus" },
+          { "name": "Notes", "dataType": "string", "sourceColumn": "Notes" }
+        ],
+        "partitions": [
+          {
+            "name": "ClientOutcomesTracker",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let Source = SharePoint.Tables(\"https://chollabehavioralhealth.sharepoint.com/sites/iop-hub-dev\", [Implementation=\"2.0\"]), ClientOutcomesTracker = Source{[Title=\"Client Outcomes Tracker\"]}[Items] in ClientOutcomesTracker"
+            }
+          }
+        ]
+      },
+      {
+        "name": "BillingDenials",
+        "columns": [
+          { "name": "ClaimID", "dataType": "string", "sourceColumn": "ClaimID" },
+          { "name": "Payer", "dataType": "string", "sourceColumn": "Payer" },
+          { "name": "DenialDate", "dataType": "dateTime", "sourceColumn": "DenialDate" },
+          { "name": "DenialReason", "dataType": "string", "sourceColumn": "DenialReason" },
+          { "name": "Amount", "dataType": "decimal", "sourceColumn": "Amount" },
+          { "name": "AppealStatus", "dataType": "string", "sourceColumn": "AppealStatus" },
+          { "name": "AppealDeadline", "dataType": "dateTime", "sourceColumn": "AppealDeadline" },
+          { "name": "Notes", "dataType": "string", "sourceColumn": "Notes" }
+        ],
+        "partitions": [
+          {
+            "name": "BillingDenials",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let Source = SharePoint.Tables(\"https://chollabehavioralhealth.sharepoint.com/sites/iop-hub-dev\", [Implementation=\"2.0\"]), BillingDenials = Source{[Title=\"Billing Denials\"]}[Items] in BillingDenials"
+            }
+          }
+        ]
+      },
+      {
+        "name": "EmployeeTrainingLog",
+        "columns": [
+          { "name": "StaffName", "dataType": "string", "sourceColumn": "StaffName" },
+          { "name": "TrainingName", "dataType": "string", "sourceColumn": "TrainingName" },
+          { "name": "CompletedDate", "dataType": "dateTime", "sourceColumn": "CompletedDate" },
+          { "name": "DueDate", "dataType": "dateTime", "sourceColumn": "DueDate" },
+          { "name": "Frequency", "dataType": "string", "sourceColumn": "Frequency" },
+          { "name": "Status", "dataType": "string", "sourceColumn": "Status" },
+          { "name": "CertificateOnFile", "dataType": "boolean", "sourceColumn": "CertificateOnFile" }
+        ],
+        "partitions": [
+          {
+            "name": "EmployeeTrainingLog",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let Source = SharePoint.Tables(\"https://chollabehavioralhealth.sharepoint.com/sites/iop-hub-dev\", [Implementation=\"2.0\"]), EmployeeTrainingLog = Source{[Title=\"Employee Training Log\"]}[Items] in EmployeeTrainingLog"
+            }
+          }
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "name": "DateTable_RevenueTracker",
+        "fromTable": "RevenueTracker",
+        "fromColumn": "Month",
+        "toTable": "DateTable",
+        "toColumn": "Date",
+        "crossFilteringBehavior": "singleDirection"
+      },
+      {
+        "name": "DateTable_AdmissionsPipeline",
+        "fromTable": "AdmissionsPipeline",
+        "fromColumn": "ReferralDate",
+        "toTable": "DateTable",
+        "toColumn": "Date",
+        "crossFilteringBehavior": "singleDirection"
+      },
+      {
+        "name": "DateTable_IncidentReports",
+        "fromTable": "IncidentReports",
+        "fromColumn": "IncidentDate",
+        "toTable": "DateTable",
+        "toColumn": "Date",
+        "crossFilteringBehavior": "singleDirection"
+      },
+      {
+        "name": "DateTable_ComplianceAuditCalendar",
+        "fromTable": "ComplianceAuditCalendar",
+        "fromColumn": "AuditDate",
+        "toTable": "DateTable",
+        "toColumn": "Date",
+        "crossFilteringBehavior": "singleDirection"
+      },
+      {
+        "name": "DateTable_BillingDenials",
+        "fromTable": "BillingDenials",
+        "fromColumn": "DenialDate",
+        "toTable": "DateTable",
+        "toColumn": "Date",
+        "crossFilteringBehavior": "singleDirection"
+      },
+      {
+        "name": "DateTable_ClientOutcomes",
+        "fromTable": "ClientOutcomesTracker",
+        "fromColumn": "AdmitDate",
+        "toTable": "DateTable",
+        "toColumn": "Date",
+        "crossFilteringBehavior": "singleDirection"
+      },
+      {
+        "name": "AdmissionsPipeline_InsuranceVerification",
+        "fromTable": "InsuranceVerification",
+        "fromColumn": "ReferralID",
+        "toTable": "AdmissionsPipeline",
+        "toColumn": "ReferralID",
+        "crossFilteringBehavior": "bothDirections"
+      }
+    ],
+    "annotations": [
+      {
+        "name": "ClientCompatibilityLevel",
+        "value": "700"
+      },
+      {
+        "name": "TabularEditorVersion",
+        "value": "3.x"
+      }
+    ]
+  }
+}
