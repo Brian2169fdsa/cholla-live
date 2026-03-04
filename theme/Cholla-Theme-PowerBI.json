@@ -1,0 +1,87 @@
+{
+    "name": "Cholla Behavioral Health",
+    "dataColors": [
+        "#1a7a7a", "#0d5f5f", "#3aa8a8", "#107c10",
+        "#d83b01", "#52a8a8", "#986f0b", "#605e5c"
+    ],
+    "background": "#ffffff",
+    "foreground": "#323130",
+    "tableAccent": "#1a7a7a",
+    "maximum": "#d83b01",
+    "center": "#986f0b",
+    "minimum": "#107c10",
+    "good": "#107c10",
+    "neutral": "#986f0b",
+    "bad": "#d83b01",
+    "visualStyles": {
+        "*": {
+            "*": {
+                "title": [{
+                    "fontFamily": "Segoe UI",
+                    "fontSize": 12,
+                    "color": {"solid": {"color": "#2b2b2b"}}
+                }],
+                "background": [{
+                    "color": {"solid": {"color": "#ffffff"}},
+                    "transparency": 0
+                }],
+                "border": [{
+                    "color": {"solid": {"color": "#edebe9"}}
+                }]
+            }
+        },
+        "page": {
+            "*": {
+                "background": [{
+                    "color": {"solid": {"color": "#f5f5f5"}},
+                    "transparency": 0
+                }]
+            }
+        },
+        "card": {
+            "*": {
+                "labels": [{
+                    "color": {"solid": {"color": "#1a7a7a"}},
+                    "fontSize": 28,
+                    "fontFamily": "Segoe UI"
+                }],
+                "categoryLabels": [{
+                    "color": {"solid": {"color": "#605e5c"}},
+                    "fontSize": 10,
+                    "fontFamily": "Segoe UI"
+                }]
+            }
+        },
+        "slicer": {
+            "*": {
+                "header": [{
+                    "fontColor": {"solid": {"color": "#0d5f5f"}},
+                    "fontSize": 11,
+                    "fontFamily": "Segoe UI Semibold"
+                }]
+            }
+        }
+    },
+    "textClasses": {
+        "callout": {
+            "fontSize": 28,
+            "fontFace": "Segoe UI",
+            "color": "#1a7a7a"
+        },
+        "title": {
+            "fontSize": 14,
+            "fontFace": "Segoe UI Semibold",
+            "color": "#0d5f5f"
+        },
+        "header": {
+            "fontSize": 12,
+            "fontFace": "Segoe UI Semibold",
+            "color": "#323130"
+        },
+        "label": {
+            "fontSize": 10,
+            "fontFace": "Segoe UI",
+            "color": "#605e5c"
+        }
+    }
+}

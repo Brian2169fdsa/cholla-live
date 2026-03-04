@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Director of Operations KPIs — Cholla Behavioral Health</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,sans-serif;background:#f5f5f5;color:#323130;padding:20px;line-height:1.5}
+.header{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:12px;border-bottom:3px solid #1a7a7a}
+.header h1{font-size:1.4em;color:#0d5f5f}
+.header .badge{background:#1a7a7a;color:#fff;font-size:.7em;padding:3px 10px;border-radius:12px}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px}
+.kpi-card{background:#fff;border-radius:8px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.1);border-top:3px solid #1a7a7a;text-align:center}
+.kpi-card.alert{border-top-color:#d83b01}
+.kpi-card.success{border-top-color:#107c10}
+.kpi-card.warn{border-top-color:#986f0b}
+.kpi-value{font-size:2.2em;font-weight:700;color:#1a7a7a;line-height:1.1}
+.kpi-card.alert .kpi-value{color:#d83b01}
+.kpi-card.success .kpi-value{color:#107c10}
+.kpi-card.warn .kpi-value{color:#986f0b}
+.kpi-label{font-size:.78em;color:#605e5c;text-transform:uppercase;letter-spacing:.5px;margin-top:4px}
+.kpi-sub{font-size:.72em;color:#a19f9d;margin-top:2px}
+.section{background:#fff;border-radius:8px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.1);margin-bottom:20px}
+.section h2{font-size:1.1em;color:#0d5f5f;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #edebe9}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+table{border-collapse:collapse;width:100%;font-size:.85em}
+th{background:#1a7a7a;color:#fff;padding:8px 12px;text-align:left;font-weight:600}
+td{padding:8px 12px;border-bottom:1px solid #edebe9}
+tr:hover td{background:#f2f9f9}
+.status{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.75em;font-weight:600}
+.status-green{background:#dff6dd;color:#107c10}
+.status-yellow{background:#fff4ce;color:#986f0b}
+.status-red{background:#fde7e9;color:#d83b01}
+.status-blue{background:#deecf9;color:#0078d4}
+.gauge-container{display:flex;justify-content:center;align-items:center;padding:16px 0}
+.gauge{width:160px;height:80px;position:relative}
+.gauge-bg{fill:none;stroke:#edebe9;stroke-width:12}
+.gauge-fill{fill:none;stroke:#1a7a7a;stroke-width:12;stroke-linecap:round;transition:stroke-dashoffset .8s ease}
+.gauge-text{font-size:1.6em;font-weight:700;fill:#1a7a7a}
+.gauge-label{font-size:.5em;fill:#605e5c}
+@media(max-width:768px){.two-col{grid-template-columns:1fr}.kpi-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<div class="header">
+    <h1>Director of Operations Dashboard</h1>
+    <span class="badge">Live</span>
+    <span style="margin-left:auto;font-size:.8em;color:#605e5c">Last updated: March 4, 2026</span>
+</div>
+
+<!-- KPI Cards Row -->
+<div class="kpi-grid">
+    <div class="kpi-card">
+        <div class="kpi-value">47</div>
+        <div class="kpi-label">Active Census</div>
+        <div class="kpi-sub">of 60 capacity</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-value">78%</div>
+        <div class="kpi-label">Utilization</div>
+        <div class="kpi-sub">Target: 85%</div>
+    </div>
+    <div class="kpi-card success">
+        <div class="kpi-value">$218K</div>
+        <div class="kpi-label">Revenue MTD</div>
+        <div class="kpi-sub">87% of $250K target</div>
+    </div>
+    <div class="kpi-card success">
+        <div class="kpi-value">94%</div>
+        <div class="kpi-label">Compliance Score</div>
+        <div class="kpi-sub">Last AZDHS audit</div>
+    </div>
+    <div class="kpi-card warn">
+        <div class="kpi-value">2</div>
+        <div class="kpi-label">Open CAPs</div>
+        <div class="kpi-sub">1 overdue</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-value">22</div>
+        <div class="kpi-label">Total Staff</div>
+        <div class="kpi-sub">2 positions open</div>
+    </div>
+    <div class="kpi-card success">
+        <div class="kpi-value">96%</div>
+        <div class="kpi-label">Clean Claim Rate</div>
+        <div class="kpi-sub">Above 95% target</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-value">42d</div>
+        <div class="kpi-label">Avg LOS</div>
+        <div class="kpi-sub">Target: 30-45 days</div>
+    </div>
+</div>
+
+<div class="two-col">
+    <!-- Revenue by Payer -->
+    <div class="section">
+        <h2>Revenue by Payer — February 2026</h2>
+        <table>
+            <thead><tr><th>Payer</th><th style="text-align:right">Revenue</th><th style="text-align:right">Claims</th><th style="text-align:right">Clean %</th></tr></thead>
+            <tbody>
+                <tr><td>AHCCCS Mercy Care</td><td style="text-align:right">$78,500</td><td style="text-align:right">142</td><td style="text-align:right">96%</td></tr>
+                <tr><td>AHCCCS UHCCP</td><td style="text-align:right">$52,000</td><td style="text-align:right">98</td><td style="text-align:right">96%</td></tr>
+                <tr><td>BCBS</td><td style="text-align:right">$34,000</td><td style="text-align:right">45</td><td style="text-align:right">96%</td></tr>
+                <tr><td>UHC/Optum</td><td style="text-align:right">$28,000</td><td style="text-align:right">38</td><td style="text-align:right">92%</td></tr>
+                <tr><td>Cigna</td><td style="text-align:right">$12,500</td><td style="text-align:right">18</td><td style="text-align:right">94%</td></tr>
+                <tr><td>Aetna</td><td style="text-align:right">$8,000</td><td style="text-align:right">12</td><td style="text-align:right">100%</td></tr>
+                <tr><td>Private Pay</td><td style="text-align:right">$3,500</td><td style="text-align:right">5</td><td style="text-align:right">100%</td></tr>
+                <tr><td>Other/SCA</td><td style="text-align:right">$1,500</td><td style="text-align:right">3</td><td style="text-align:right">100%</td></tr>
+                <tr style="font-weight:700;background:#f2f9f9"><td>Total</td><td style="text-align:right">$218,000</td><td style="text-align:right">361</td><td style="text-align:right">96%</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Compliance / Incidents -->
+    <div class="section">
+        <h2>Open Incidents &amp; CAPs</h2>
+        <table>
+            <thead><tr><th>ID</th><th>Type</th><th>Severity</th><th>Status</th></tr></thead>
+            <tbody>
+                <tr><td>IR-2026-012</td><td>Behavioral Escalation</td><td><span class="status status-yellow">Medium</span></td><td><span class="status status-blue">Under Review</span></td></tr>
+                <tr><td>IR-2026-011</td><td>Med Error</td><td><span class="status status-red">High</span></td><td><span class="status status-blue">Investigating</span></td></tr>
+                <tr><td>CAP-2026-003</td><td>Documentation</td><td><span class="status status-yellow">CAP</span></td><td><span class="status status-blue">In Progress</span></td></tr>
+                <tr><td>CAP-2026-002</td><td>Safety — Fire Drills</td><td><span class="status status-yellow">CAP</span></td><td><span class="status status-green">Pending Verify</span></td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="section">
+    <h2>Upcoming Compliance Events</h2>
+    <table>
+        <thead><tr><th>Event</th><th>Date</th><th>Type</th><th>Scope</th><th>Status</th></tr></thead>
+        <tbody>
+            <tr><td>Fire Drill</td><td>Mar 10</td><td>Internal</td><td>Facility-wide</td><td><span class="status status-blue">Scheduled</span></td></tr>
+            <tr><td>Chart Audit — Q1</td><td>Mar 20</td><td>Chart Audit</td><td>15 random charts</td><td><span class="status status-blue">Scheduled</span></td></tr>
+            <tr><td>AHCCCS Provider Review</td><td>Apr 15</td><td>AZDHS</td><td>Full facility</td><td><span class="status status-yellow">Preparing</span></td></tr>
+            <tr><td>Fire Marshal Inspection</td><td>Apr 30</td><td>Fire Marshal</td><td>Facility</td><td><span class="status status-blue">Scheduled</span></td></tr>
+            <tr><td>HIPAA Risk Assessment</td><td>May 1</td><td>HIPAA</td><td>Organization</td><td><span class="status status-blue">Scheduled</span></td></tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

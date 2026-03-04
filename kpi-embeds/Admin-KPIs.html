@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Administration KPIs — Cholla Behavioral Health</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,sans-serif;background:#f5f5f5;color:#323130;padding:20px;line-height:1.5}
+.header{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:12px;border-bottom:3px solid #1a7a7a}
+.header h1{font-size:1.4em;color:#0d5f5f}
+.header .badge{background:#1a7a7a;color:#fff;font-size:.7em;padding:3px 10px;border-radius:12px}
+.tabs{display:flex;gap:0;margin-bottom:20px;border-bottom:2px solid #edebe9}
+.tab{padding:10px 20px;cursor:pointer;font-size:.9em;font-weight:600;color:#605e5c;border-bottom:3px solid transparent;transition:all .2s}
+.tab.active{color:#1a7a7a;border-bottom-color:#1a7a7a}
+.tab:hover{color:#0d5f5f;background:#f2f9f9}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:24px}
+.kpi-card{background:#fff;border-radius:8px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.1);border-top:3px solid #1a7a7a;text-align:center}
+.kpi-card.success{border-top-color:#107c10}
+.kpi-card.warn{border-top-color:#986f0b}
+.kpi-card.alert{border-top-color:#d83b01}
+.kpi-value{font-size:2.2em;font-weight:700;color:#1a7a7a;line-height:1.1}
+.kpi-card.success .kpi-value{color:#107c10}
+.kpi-card.warn .kpi-value{color:#986f0b}
+.kpi-card.alert .kpi-value{color:#d83b01}
+.kpi-label{font-size:.78em;color:#605e5c;text-transform:uppercase;letter-spacing:.5px;margin-top:4px}
+.kpi-sub{font-size:.72em;color:#a19f9d;margin-top:2px}
+.section{background:#fff;border-radius:8px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.1);margin-bottom:20px}
+.section h2{font-size:1.1em;color:#0d5f5f;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #edebe9}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+table{border-collapse:collapse;width:100%;font-size:.85em}
+th{background:#1a7a7a;color:#fff;padding:8px 12px;text-align:left;font-weight:600}
+td{padding:8px 12px;border-bottom:1px solid #edebe9}
+tr:hover td{background:#f2f9f9}
+.status{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.75em;font-weight:600}
+.status-green{background:#dff6dd;color:#107c10}
+.status-yellow{background:#fff4ce;color:#986f0b}
+.status-red{background:#fde7e9;color:#d83b01}
+.status-blue{background:#deecf9;color:#0078d4}
+.status-gray{background:#f3f2f1;color:#605e5c}
+@media(max-width:768px){.two-col{grid-template-columns:1fr}.kpi-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<div class="header">
+    <h1>Administration Dashboard</h1>
+    <span class="badge">Live</span>
+    <span style="margin-left:auto;font-size:.8em;color:#605e5c">Last updated: March 4, 2026</span>
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+    <div class="tab active" onclick="switchTab('billing')">Billing &amp; Revenue</div>
+    <div class="tab" onclick="switchTab('compliance')">Compliance</div>
+    <div class="tab" onclick="switchTab('hr')">HR / Workforce</div>
+</div>
+
+<!-- BILLING TAB -->
+<div id="tab-billing" class="tab-content active">
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-value">$218K</div>
+            <div class="kpi-label">Revenue MTD</div>
+            <div class="kpi-sub">87% of $250K target</div>
+        </div>
+        <div class="kpi-card success">
+            <div class="kpi-value">96%</div>
+            <div class="kpi-label">Clean Claim Rate</div>
+            <div class="kpi-sub">Above 95% target</div>
+        </div>
+        <div class="kpi-card warn">
+            <div class="kpi-value">16</div>
+            <div class="kpi-label">Denials MTD</div>
+            <div class="kpi-sub">$8,150 total denied</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-value">361</div>
+            <div class="kpi-label">Claims Submitted</div>
+            <div class="kpi-sub">February 2026</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-value">$29K</div>
+            <div class="kpi-label">Payroll — Period</div>
+            <div class="kpi-sub">Feb 16-28, 2026</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-value">3</div>
+            <div class="kpi-label">Appeals Pending</div>
+            <div class="kpi-sub">$5,150 at risk</div>
+        </div>
+    </div>
+
+    <div class="two-col">
+        <div class="section">
+            <h2>Revenue by Payer</h2>
+            <table>
+                <thead><tr><th>Payer</th><th style="text-align:right">Revenue</th><th style="text-align:right">% Mix</th></tr></thead>
+                <tbody>
+                    <tr><td>AHCCCS Mercy Care</td><td style="text-align:right">$78,500</td><td style="text-align:right">36%</td></tr>
+                    <tr><td>AHCCCS UHCCP</td><td style="text-align:right">$52,000</td><td style="text-align:right">24%</td></tr>
+                    <tr><td>BCBS</td><td style="text-align:right">$34,000</td><td style="text-align:right">16%</td></tr>
+                    <tr><td>UHC/Optum</td><td style="text-align:right">$28,000</td><td style="text-align:right">13%</td></tr>
+                    <tr><td>Cigna</td><td style="text-align:right">$12,500</td><td style="text-align:right">6%</td></tr>
+                    <tr><td>Other</td><td style="text-align:right">$13,000</td><td style="text-align:right">6%</td></tr>
+                    <tr style="font-weight:700;background:#f2f9f9"><td>Total</td><td style="text-align:right">$218,000</td><td style="text-align:right">100%</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="section">
+            <h2>Recent Billing Denials</h2>
+            <table>
+                <thead><tr><th>Claim</th><th>Payer</th><th>Reason</th><th style="text-align:right">Amount</th><th>Appeal</th></tr></thead>
+                <tbody>
+                    <tr><td>CLM-1142</td><td>Mercy Care</td><td>Auth Expired</td><td style="text-align:right">$1,250</td><td><span class="status status-blue">Filed</span></td></tr>
+                    <tr><td>CLM-1076</td><td>UHCCP</td><td>Eligibility</td><td style="text-align:right">$2,100</td><td><span class="status status-blue">Filed</span></td></tr>
+                    <tr><td>CLM-1033</td><td>BCBS</td><td>Med Necessity</td><td style="text-align:right">$1,800</td><td><span class="status status-blue">Filed</span></td></tr>
+                    <tr><td>CLM-1098</td><td>UHC/Optum</td><td>Coding Error</td><td style="text-align:right">$875</td><td><span class="status status-green">Won</span></td></tr>
+                    <tr><td>CLM-1055</td><td>Mercy Care</td><td>Auth Expired</td><td style="text-align:right">$1,500</td><td><span class="status status-red">Lost</span></td></tr>
+                    <tr><td>CLM-1010</td><td>Cigna</td><td>Duplicate</td><td style="text-align:right">$625</td><td><span class="status status-gray">Write-Off</span></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- COMPLIANCE TAB -->
+<div id="tab-compliance" class="tab-content">
+    <div class="kpi-grid">
+        <div class="kpi-card success">
+            <div class="kpi-value">94%</div>
+            <div class="kpi-label">Compliance Score</div>
+            <div class="kpi-sub">Last AZDHS audit</div>
+        </div>
+        <div class="kpi-card warn">
+            <div class="kpi-value">2</div>
+            <div class="kpi-label">Open CAPs</div>
+            <div class="kpi-sub">1 in progress, 1 pending</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-value">5</div>
+            <div class="kpi-label">Upcoming Audits</div>
+            <div class="kpi-sub">Next 90 days</div>
+        </div>
+        <div class="kpi-card success">
+            <div class="kpi-value">0</div>
+            <div class="kpi-label">Overdue Audits</div>
+            <div class="kpi-sub">All on schedule</div>
+        </div>
+    </div>
+    <div class="section">
+        <h2>Compliance Calendar</h2>
+        <table>
+            <thead><tr><th>Event</th><th>Date</th><th>Type</th><th>Scope</th><th>Status</th></tr></thead>
+            <tbody>
+                <tr><td>Fire Drill</td><td>Mar 10</td><td>Internal</td><td>Facility-wide</td><td><span class="status status-blue">Scheduled</span></td></tr>
+                <tr><td>Chart Audit — Q1</td><td>Mar 20</td><td>Chart Audit</td><td>15 charts</td><td><span class="status status-blue">Scheduled</span></td></tr>
+                <tr><td>AHCCCS Provider Review</td><td>Apr 15</td><td>AZDHS</td><td>Full facility</td><td><span class="status status-yellow">Preparing</span></td></tr>
+                <tr><td>Fire Marshal Inspection</td><td>Apr 30</td><td>Fire Marshal</td><td>Facility</td><td><span class="status status-blue">Scheduled</span></td></tr>
+                <tr><td>HIPAA Risk Assessment</td><td>May 1</td><td>HIPAA</td><td>Organization</td><td><span class="status status-blue">Scheduled</span></td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- HR TAB -->
+<div id="tab-hr" class="tab-content">
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-value">22</div>
+            <div class="kpi-label">Headcount</div>
+            <div class="kpi-sub">All staff</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-value">12%</div>
+            <div class="kpi-label">Turnover Rate</div>
+            <div class="kpi-sub">Trailing 12 months</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-value">2</div>
+            <div class="kpi-label">Open Positions</div>
+            <div class="kpi-sub">Clinical department</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-value">$29K</div>
+            <div class="kpi-label">Biweekly Payroll</div>
+            <div class="kpi-sub">8 staff members</div>
+        </div>
+    </div>
+    <div class="section">
+        <h2>Training Compliance Overview</h2>
+        <table>
+            <thead><tr><th>Training</th><th>Frequency</th><th style="text-align:right">Current</th><th style="text-align:right">Due Soon</th><th style="text-align:right">Overdue</th></tr></thead>
+            <tbody>
+                <tr><td>HIPAA</td><td>Annual</td><td style="text-align:right;color:#107c10">7</td><td style="text-align:right;color:#986f0b">1</td><td style="text-align:right">0</td></tr>
+                <tr><td>FWA</td><td>Annual</td><td style="text-align:right;color:#107c10">8</td><td style="text-align:right">0</td><td style="text-align:right">0</td></tr>
+                <tr><td>Cultural Competency</td><td>Annual</td><td style="text-align:right;color:#107c10">8</td><td style="text-align:right">0</td><td style="text-align:right">0</td></tr>
+                <tr><td>Trauma-Informed Care</td><td>Annual</td><td style="text-align:right;color:#107c10">8</td><td style="text-align:right">0</td><td style="text-align:right">0</td></tr>
+                <tr><td>CPR/First Aid</td><td>Biennial</td><td style="text-align:right;color:#107c10">7</td><td style="text-align:right;color:#986f0b">1</td><td style="text-align:right">0</td></tr>
+                <tr><td>CPI De-escalation</td><td>Annual</td><td style="text-align:right;color:#107c10">7</td><td style="text-align:right">0</td><td style="text-align:right;color:#d83b01;font-weight:700">1</td></tr>
+                <tr><td>QPR Suicide Prevention</td><td>Annual</td><td style="text-align:right;color:#107c10">8</td><td style="text-align:right">0</td><td style="text-align:right">0</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+function switchTab(tab) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    event.target.classList.add('active');
+    document.getElementById('tab-' + tab).classList.add('active');
+}
+</script>
+
+</body>
+</html>
