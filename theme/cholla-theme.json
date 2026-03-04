@@ -1,0 +1,31 @@
+{
+    "name": "Cholla Behavioral Health",
+    "isInverted": false,
+    "palette": {
+        "themePrimary": "#1a7a7a",
+        "themeLighterAlt": "#f2f9f9",
+        "themeLighter": "#cce8e8",
+        "themeLight": "#a3d4d4",
+        "themeTertiary": "#52a8a8",
+        "themeSecondary": "#1f8585",
+        "themeDarkAlt": "#176e6e",
+        "themeDark": "#145d5d",
+        "themeDarker": "#0e4545",
+        "neutralLighterAlt": "#faf9f8",
+        "neutralLighter": "#f3f2f1",
+        "neutralLight": "#edebe9",
+        "neutralQuaternaryAlt": "#e1dfdd",
+        "neutralQuaternary": "#d2d0ce",
+        "neutralTertiaryAlt": "#c8c6c4",
+        "neutralTertiary": "#a19f9d",
+        "neutralSecondary": "#605e5c",
+        "neutralPrimaryAlt": "#3b3a39",
+        "neutralPrimary": "#323130",
+        "neutralDark": "#201f1e",
+        "black": "#000000",
+        "white": "#ffffff",
+        "primaryBackground": "#ffffff",
+        "primaryText": "#323130",
+        "accent": "#1a7a7a"
+    }
+}
