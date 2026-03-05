@@ -20,7 +20,7 @@
 
 param(
     [Parameter(Mandatory = $false)]
-    [string]$SiteUrl = "https://chollabehavioralhealth.sharepoint.com/sites/iop-hub-dev"
+    [string]$SiteUrl = "https://chollabehavioralhealth.sharepoint.com/sites/AIWorkspace"
 )
 
 $ErrorActionPreference = "Stop"

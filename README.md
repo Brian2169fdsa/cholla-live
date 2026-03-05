@@ -7,8 +7,8 @@ A complete SharePoint Online Operations Hub for **Cholla Behavioral Health**, a 
 | Parameter | Value |
 |-----------|-------|
 | **Tenant URL** | `https://chollabehavioralhealth.sharepoint.com` |
-| **Site Alias** | `iop-hub-dev` |
-| **Site URL** | `https://chollabehavioralhealth.sharepoint.com/sites/iop-hub-dev` |
+| **Site Alias** | `AIWorkspace` |
+| **Site URL** | `https://chollabehavioralhealth.sharepoint.com/sites/AIWorkspace` |
 | **Site Type** | Communication Site |
 | **Admin** | `breinhart@chollabehavioralhealth.com` |
 | **Brand Primary** | `#1a7a7a` (Cholla Teal) |
@@ -75,7 +75,7 @@ cholla-ops-hub/
    ```powershell
    # These are the defaults — edit if your tenant differs
    $TenantUrl   = "https://chollabehavioralhealth.sharepoint.com"
-   $SiteAlias   = "iop-hub-dev"
+   $SiteAlias   = "AIWorkspace"
    $AdminEmail  = "breinhart@chollabehavioralhealth.com"
    ```
 
@@ -112,7 +112,7 @@ cholla-ops-hub/
    - Human Resources
    - Administration
 
-7. **Verify**: Open `https://chollabehavioralhealth.sharepoint.com/sites/iop-hub-dev` in your browser and confirm all pages, lists, libraries, and navigation are present.
+7. **Verify**: Open `https://chollabehavioralhealth.sharepoint.com/sites/AIWorkspace` in your browser and confirm all pages, lists, libraries, and navigation are present.
 
 ### Day 2: KPI Dashboards (2 hours)
 
@@ -142,7 +142,7 @@ cholla-ops-hub/
 
 2. **Connect to SharePoint Online lists**:
    - Get Data → SharePoint Online List
-   - Enter site URL: `https://chollabehavioralhealth.sharepoint.com/sites/iop-hub-dev`
+   - Enter site URL: `https://chollabehavioralhealth.sharepoint.com/sites/AIWorkspace`
    - Select all 18 lists (or connect them one by one per the data model spec)
 
 3. **Apply data model**:
@@ -261,7 +261,7 @@ Self-contained HTML files optimized for SharePoint Embed web parts. Each uses th
 $PSVersionTable.PSVersion
 
 # Re-authenticate
-Connect-PnPOnline -Url "https://chollabehavioralhealth.sharepoint.com/sites/iop-hub-dev" -Interactive
+Connect-PnPOnline -Url "https://chollabehavioralhealth.sharepoint.com/sites/AIWorkspace" -Interactive
 ```
 
 ### Theme doesn't apply

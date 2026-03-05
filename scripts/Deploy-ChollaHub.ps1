@@ -33,7 +33,7 @@ param(
     [string]$TenantUrl = "https://chollabehavioralhealth.sharepoint.com",
 
     [Parameter(Mandatory = $false)]
-    [string]$SiteAlias = "iop-hub-dev",
+    [string]$SiteAlias = "AIWorkspace",
 
     [string]$SiteTitle = "Cholla IOP Operations Hub",
 
