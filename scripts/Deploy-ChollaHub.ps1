@@ -108,39 +108,48 @@ function Ensure-Field {
         [switch]$Required
     )
 
-    $existing = Get-PnPField -List $ListName -Identity $InternalName -ErrorAction SilentlyContinue
-    if ($existing) {
-        Write-Skip "  Field '$InternalName' already exists on '$ListName'"
-        return
-    }
-
-    $params = @{
-        List         = $ListName
-        DisplayName  = $FieldName
-        InternalName = $InternalName
-        Type         = $FieldType
-        AddToDefaultView = $true
-        ErrorAction  = "Stop"
-    }
-
-    if ($Required) { $params.Required = $true }
-
-    switch ($FieldType) {
-        "Choice" {
-            if ($Choices) {
-                $params.Choices = $Choices
-            }
+    try {
+        # Check by both internal name and display name
+        $existing = Get-PnPField -List $ListName -Identity $InternalName -ErrorAction SilentlyContinue
+        if (-not $existing) {
+            $existing = Get-PnPField -List $ListName -Identity $FieldName -ErrorAction SilentlyContinue
         }
-        "Calculated" {
-            $params.Remove("AddToDefaultView")
-            # Calculated fields need XML
-            Add-CalculatedField -ListName $ListName -FieldName $FieldName -InternalName $InternalName -Formula $Formula -OutputType $OutputType
+        if ($existing) {
+            Write-Skip "  Field '$InternalName' already exists on '$ListName'"
             return
         }
-    }
 
-    Add-PnPField @params | Out-Null
-    Write-OK "  Added field '$InternalName' ($FieldType) to '$ListName'"
+        $params = @{
+            List         = $ListName
+            DisplayName  = $FieldName
+            InternalName = $InternalName
+            Type         = $FieldType
+            AddToDefaultView = $true
+            ErrorAction  = "Stop"
+        }
+
+        if ($Required) { $params.Required = $true }
+
+        switch ($FieldType) {
+            "Choice" {
+                if ($Choices) {
+                    $params.Choices = $Choices
+                }
+            }
+            "Calculated" {
+                $params.Remove("AddToDefaultView")
+                # Calculated fields need XML
+                Add-CalculatedField -ListName $ListName -FieldName $FieldName -InternalName $InternalName -Formula $Formula -OutputType $OutputType
+                return
+            }
+        }
+
+        Add-PnPField @params | Out-Null
+        Write-OK "  Added field '$InternalName' ($FieldType) to '$ListName'"
+    }
+    catch {
+        Write-Host "  [WARN] Failed to create field '$InternalName' on '$ListName': $($_.Exception.Message)" -ForegroundColor Yellow
+    }
 }
 
 function Add-CalculatedField {
@@ -807,7 +816,7 @@ Ensure-List "Census Tracker"
 # Title column exists by default
 Ensure-Field -ListName "Census Tracker" -FieldName "Active Census"       -InternalName "ActiveCensus"    -FieldType "Number"
 Ensure-Field -ListName "Census Tracker" -FieldName "Capacity"            -InternalName "Capacity"        -FieldType "Number"
-Ensure-Field -ListName "Census Tracker" -FieldName "Utilization Pct"     -InternalName "UtilizationPct"  -FieldType "Calculated" -Formula "=[ActiveCensus]/[Capacity]" -OutputType "Number"
+Ensure-Field -ListName "Census Tracker" -FieldName "Utilization Pct"     -InternalName "UtilizationPct"  -FieldType "Calculated" -Formula "=[Active Census]/[Capacity]" -OutputType "Number"
 Ensure-Field -ListName "Census Tracker" -FieldName "New Admits"          -InternalName "NewAdmits"       -FieldType "Number"
 Ensure-Field -ListName "Census Tracker" -FieldName "Discharges"          -InternalName "Discharges"      -FieldType "Number"
 Ensure-Field -ListName "Census Tracker" -FieldName "ALOS"                -InternalName "ALOS"            -FieldType "Number"
@@ -871,7 +880,7 @@ Ensure-Field -ListName "Referral Partner Tracker" -FieldName "Contact Name"     
 Ensure-Field -ListName "Referral Partner Tracker" -FieldName "Contact Phone"    -InternalName "ContactPhone"    -FieldType "Text"
 Ensure-Field -ListName "Referral Partner Tracker" -FieldName "Referrals MTD"    -InternalName "ReferralsMTD"    -FieldType "Number"
 Ensure-Field -ListName "Referral Partner Tracker" -FieldName "Admits MTD"       -InternalName "AdmitsMTD"       -FieldType "Number"
-Ensure-Field -ListName "Referral Partner Tracker" -FieldName "Conversion Pct"   -InternalName "ConversionPct"   -FieldType "Calculated" -Formula "=[AdmitsMTD]/[ReferralsMTD]" -OutputType "Number"
+Ensure-Field -ListName "Referral Partner Tracker" -FieldName "Conversion Pct"   -InternalName "ConversionPct"   -FieldType "Calculated" -Formula "=[Admits MTD]/[Referrals MTD]" -OutputType "Number"
 Ensure-Field -ListName "Referral Partner Tracker" -FieldName "Last Contact"     -InternalName "LastContact"     -FieldType "DateTime"
 Ensure-Field -ListName "Referral Partner Tracker" -FieldName "Agreement On File"-InternalName "AgreementOnFile" -FieldType "Boolean"
 Ensure-Field -ListName "Referral Partner Tracker" -FieldName "Status"           -InternalName "Status"          -FieldType "Choice" -Choices @("Active","Follow-Up","New Partner","Inactive")
@@ -941,7 +950,7 @@ Ensure-Field -ListName "Compliance Audit Calendar" -FieldName "Audit Type"      
 Ensure-Field -ListName "Compliance Audit Calendar" -FieldName "Scope"           -InternalName "Scope"          -FieldType "Text"
 Ensure-Field -ListName "Compliance Audit Calendar" -FieldName "Owner"           -InternalName "Owner"          -FieldType "User"
 Ensure-Field -ListName "Compliance Audit Calendar" -FieldName "Status"          -InternalName "Status"         -FieldType "Choice" -Choices @("Scheduled","Preparing","Complete","Overdue")
-Ensure-Field -ListName "Compliance Audit Calendar" -FieldName "Days Remaining"  -InternalName "DaysRemaining"  -FieldType "Calculated" -Formula "=[AuditDate]-Today" -OutputType "Number"
+Ensure-Field -ListName "Compliance Audit Calendar" -FieldName "Days Remaining"  -InternalName "DaysRemaining"  -FieldType "Calculated" -Formula "=[Audit Date]-Today" -OutputType "Number"
 Ensure-Field -ListName "Compliance Audit Calendar" -FieldName "Notes"           -InternalName "Notes"          -FieldType "Note"
 
 # ── 11. Group Schedule ───────────────────────────────────────────────────────
@@ -971,7 +980,7 @@ Ensure-List "Client Outcomes Tracker"
 Ensure-Field -ListName "Client Outcomes Tracker" -FieldName "Client ID"          -InternalName "ClientID"          -FieldType "Text"
 Ensure-Field -ListName "Client Outcomes Tracker" -FieldName "Admit Date"         -InternalName "AdmitDate"         -FieldType "DateTime"
 Ensure-Field -ListName "Client Outcomes Tracker" -FieldName "Discharge Date"     -InternalName "DischargeDate"     -FieldType "DateTime"
-Ensure-Field -ListName "Client Outcomes Tracker" -FieldName "LOS Days"           -InternalName "LOSdays"           -FieldType "Calculated" -Formula "=[DischargeDate]-[AdmitDate]" -OutputType "Number"
+Ensure-Field -ListName "Client Outcomes Tracker" -FieldName "LOS Days"           -InternalName "LOSdays"           -FieldType "Calculated" -Formula "=[Discharge Date]-[Admit Date]" -OutputType "Number"
 Ensure-Field -ListName "Client Outcomes Tracker" -FieldName "PHQ-9 Intake"       -InternalName "PHQ9Intake"        -FieldType "Number"
 Ensure-Field -ListName "Client Outcomes Tracker" -FieldName "PHQ-9 Discharge"    -InternalName "PHQ9Discharge"     -FieldType "Number"
 Ensure-Field -ListName "Client Outcomes Tracker" -FieldName "GAD-7 Intake"       -InternalName "GAD7Intake"        -FieldType "Number"
