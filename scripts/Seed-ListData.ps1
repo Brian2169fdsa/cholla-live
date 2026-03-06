@@ -75,7 +75,7 @@ function Add-ListItemSafe {
 # CONNECT
 # ─────────────────────────────────────────────────────────────────────────────
 Write-Step "Connecting to $SiteUrl"
-Connect-PnPOnline -Url $SiteUrl -Interactive
+Connect-PnPOnline -Url $SiteUrl -DeviceLogin -ClientId "dd94791a-e96b-4b44-82ae-ec7de1c3a458" -Tenant "chollabehavioralhealth.onmicrosoft.com"
 Write-OK "Connected"
 
 # ─────────────────────────────────────────────────────────────────────────────

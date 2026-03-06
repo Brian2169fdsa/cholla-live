@@ -242,7 +242,7 @@ function Ensure-PlaceholderFile {
 # ─────────────────────────────────────────────────────────────────────────────
 Write-Step "Connecting to SharePoint tenant"
 try {
-    Connect-PnPOnline -Url $TenantUrl -Interactive
+    Connect-PnPOnline -Url $TenantUrl -DeviceLogin -ClientId "dd94791a-e96b-4b44-82ae-ec7de1c3a458" -Tenant "chollabehavioralhealth.onmicrosoft.com"
     Write-OK "Connected to $TenantUrl"
 } catch {
     Write-Err "Failed to connect: $_"
@@ -283,7 +283,7 @@ if ($SkipSiteCreation) {
 # Reconnect to the new site
 Write-Host "  Connecting to site: $SiteUrl" -ForegroundColor Gray
 Disconnect-PnPOnline -ErrorAction SilentlyContinue
-Connect-PnPOnline -Url $SiteUrl -Interactive
+Connect-PnPOnline -Url $SiteUrl -DeviceLogin -ClientId "dd94791a-e96b-4b44-82ae-ec7de1c3a458" -Tenant "chollabehavioralhealth.onmicrosoft.com"
 Write-OK "Connected to $SiteUrl"
 
 # Set timezone to Arizona (ID 15 — US Mountain Time, no DST)
