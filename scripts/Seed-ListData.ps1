@@ -44,11 +44,60 @@ function Write-Skip {
     Write-Host "  [SKIP] $Message" -ForegroundColor Yellow
 }
 
+# ── Field-name resolver ─────────────────────────────────────────────────────
+# SharePoint may alter the InternalName we requested in Deploy-ChollaHub.ps1.
+# This cache queries each list's fields once and maps *both* the display name
+# and the intended internal name to the real internal name SharePoint stored.
+$script:FieldCache = @{}
+
+function Get-FieldMapping {
+    param([string]$ListName)
+    if (-not $script:FieldCache.ContainsKey($ListName)) {
+        $fields = Get-PnPField -List $ListName -ErrorAction SilentlyContinue
+        $map = @{}
+        foreach ($f in $fields) {
+            $map[$f.Title]        = $f.InternalName
+            $map[$f.InternalName] = $f.InternalName
+        }
+        $script:FieldCache[$ListName] = $map
+    }
+    return $script:FieldCache[$ListName]
+}
+
+function Resolve-FieldKey {
+    <#
+    .SYNOPSIS
+        Given a key we used in the seed hashtable, return the real internal name
+        SharePoint recognises.  Tries: exact match → display-name match
+        (insert spaces before uppercase runs, e.g. NewAdmits → New Admits).
+    #>
+    param([hashtable]$Map, [string]$Key)
+    if ($Map.ContainsKey($Key)) { return $Map[$Key] }
+    # Convert camelCase / PascalCase to spaced display name
+    $spaced = ($Key -creplace '([a-z])([A-Z])', '$1 $2') `
+                    -creplace '([A-Z]+)([A-Z][a-z])', '$1 $2'
+    if ($Map.ContainsKey($spaced)) { return $Map[$spaced] }
+    # Last resort — return key as-is and let PnP try
+    return $Key
+}
+
+function Resolve-Values {
+    param([string]$ListName, [hashtable]$Values)
+    $map = Get-FieldMapping -ListName $ListName
+    $resolved = @{}
+    foreach ($key in $Values.Keys) {
+        $realKey = Resolve-FieldKey -Map $map -Key $key
+        $resolved[$realKey] = $Values[$key]
+    }
+    return $resolved
+}
+
 function Add-ListItemSafe {
     <#
     .SYNOPSIS
         Adds a list item if a matching item doesn't already exist.
         Uses $CheckField/$CheckValue to detect duplicates.
+        Automatically resolves field names to match SharePoint internals.
     #>
     param(
         [string]$ListName,
@@ -56,17 +105,22 @@ function Add-ListItemSafe {
         [string]$CheckField = "Title",
         [string]$CheckValue
     )
+    # Resolve the check field name
+    $map = Get-FieldMapping -ListName $ListName
+    $resolvedCheck = Resolve-FieldKey -Map $map -Key $CheckField
+
     if (-not $CheckValue) {
         $CheckValue = $Values["Title"]
     }
     if ($CheckValue) {
-        $existing = Get-PnPListItem -List $ListName -Query "<View><Query><Where><Eq><FieldRef Name='$CheckField'/><Value Type='Text'>$CheckValue</Value></Eq></Where></Query></View>" -ErrorAction SilentlyContinue
+        $existing = Get-PnPListItem -List $ListName -Query "<View><Query><Where><Eq><FieldRef Name='$resolvedCheck'/><Value Type='Text'>$CheckValue</Value></Eq></Where></Query></View>" -ErrorAction SilentlyContinue
         if ($existing) {
             Write-Skip "  '$CheckValue' already exists in '$ListName'"
             return
         }
     }
-    Add-PnPListItem -List $ListName -Values $Values -ErrorAction Stop | Out-Null
+    $resolvedValues = Resolve-Values -ListName $ListName -Values $Values
+    Add-PnPListItem -List $ListName -Values $resolvedValues -ErrorAction Stop | Out-Null
     $label = if ($CheckValue) { $CheckValue } else { ($Values.Values | Select-Object -First 1) }
     Write-OK "  Added: $label"
 }
