@@ -27,6 +27,11 @@ Connection method: **SharePoint Online List** connector in Power BI Desktop.
 | 12 | Client Outcomes Tracker | ClientOutcomesTracker | ClientID, AdmitDate, DischargeDate, PHQ9Intake, PHQ9Discharge, GAD7Intake, GAD7Discharge, CompletionStatus |
 | 13 | Billing Denials | BillingDenials | ClaimID, Payer, DenialDate, DenialReason, Amount, AppealStatus |
 | 14 | Employee Training Log | EmployeeTrainingLog | StaffName, TrainingName, CompletedDate, DueDate, Status |
+| 15 | Group Attendance Log | Group Attendance Log | Date, GroupName, Facilitator, Attendees |
+| 16 | Treatment Plan Review Dates | Treatment Plan Review Dates | ClientID, Therapist, LastReviewDate, NextReviewDue, Status |
+| 17 | UDS Tracking Log | UDS Tracking Log | ClientID, TestDate, Result, SubstanceDetected |
+| 18 | Payroll Tracker | Payroll Tracker | PayPeriod, StaffName, Role, RegularHours, OTHours, GrossPay, Status |
+| 19 | Open Positions | Open Positions | PositionTitle, Department, PostedDate, Applications, Status |
 
 ### Connection Steps
 
@@ -34,7 +39,7 @@ Connection method: **SharePoint Online List** connector in Power BI Desktop.
 2. Get Data → SharePoint Online List
 3. Enter site URL: `https://chollabehavioralhealth.sharepoint.com/sites/iop-hub-dev`
 4. Authenticate with organizational account (breinhart@chollabehavioralhealth.com)
-5. Select all 14 lists above
+5. Select all 19 lists above
 6. For each list, remove internal SharePoint columns (ContentType, Path, etc.) in Power Query
 7. Rename tables to the Power BI Table Names above
 
