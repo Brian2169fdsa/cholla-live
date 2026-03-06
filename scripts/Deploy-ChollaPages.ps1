@@ -316,11 +316,21 @@ function Ensure-Page {
     )
     $existing = Get-PnPPage -Identity $PageName -ErrorAction SilentlyContinue
     if ($existing) {
-        Write-Skip "Page '$PageName' exists — removing to rebuild"
-        Remove-PnPPage -Identity $PageName -Force -ErrorAction SilentlyContinue
+        Write-Skip "Page '$PageName' exists — clearing sections to rebuild"
+        # Remove all sections/web parts from existing page instead of deleting
+        $sections = $existing.Sections
+        if ($sections) {
+            for ($i = $sections.Count - 1; $i -ge 0; $i--) {
+                $existing.Sections.RemoveAt($i)
+            }
+            $existing.Save()
+            $existing.Publish()
+        }
+        Write-OK "Cleared existing page: $PageName"
+    } else {
+        Add-PnPPage -Name $PageName -Title $Title -LayoutType $LayoutType -ErrorAction Stop | Out-Null
+        Write-OK "Created page: $PageName"
     }
-    Add-PnPPage -Name $PageName -Title $Title -LayoutType $LayoutType -ErrorAction Stop | Out-Null
-    Write-OK "Created page: $PageName"
 }
 
 function Add-WebPartToPage {
