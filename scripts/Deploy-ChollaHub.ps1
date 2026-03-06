@@ -231,9 +231,10 @@ function Ensure-PlaceholderFile {
         }
     } catch { }
 
-    $tempFile = [System.IO.Path]::GetTempFileName()
+    $tempDir = [System.IO.Path]::GetTempPath()
+    $tempFile = Join-Path $tempDir $txtName
     "Placeholder — replace with actual document: $FileName" | Out-File -FilePath $tempFile -Encoding utf8
-    Add-PnPFile -Path $tempFile -Folder $targetFolder -FileName $txtName -ErrorAction SilentlyContinue | Out-Null
+    Add-PnPFile -Path $tempFile -Folder $targetFolder -ErrorAction SilentlyContinue | Out-Null
     Remove-Item $tempFile -Force
 }
 
@@ -398,7 +399,7 @@ try {
 
 foreach ($link in $navLinks) {
     try {
-        Add-PnPNavigationNode -Location TopNavigationBar -Title $link.Title -Url $link.Url -ErrorAction Stop | Out-Null
+        Add-PnPNavigationNode -Location TopNavigationBar -Title $link.Title -Url $link.Url -External -ErrorAction Stop | Out-Null
         Write-OK "Nav: $($link.Title)"
     } catch {
         Write-Err "Nav '$($link.Title)': $_"
