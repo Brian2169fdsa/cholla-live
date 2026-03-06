@@ -49,17 +49,23 @@ function Write-Skip {
 # This cache queries each list's fields once and maps *both* the display name
 # and the intended internal name to the real internal name SharePoint stored.
 $script:FieldCache = @{}
+$script:ReadOnlyCache = @{}
 
 function Get-FieldMapping {
     param([string]$ListName)
     if (-not $script:FieldCache.ContainsKey($ListName)) {
         $fields = Get-PnPField -List $ListName -ErrorAction SilentlyContinue
         $map = @{}
+        $readOnly = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
         foreach ($f in $fields) {
             $map[$f.Title]        = $f.InternalName
             $map[$f.InternalName] = $f.InternalName
+            if ($f.TypeAsString -eq "Calculated" -or $f.ReadOnlyField) {
+                $readOnly.Add($f.InternalName) | Out-Null
+            }
         }
         $script:FieldCache[$ListName] = $map
+        $script:ReadOnlyCache[$ListName] = $readOnly
     }
     return $script:FieldCache[$ListName]
 }
@@ -84,10 +90,21 @@ function Resolve-FieldKey {
 function Resolve-Values {
     param([string]$ListName, [hashtable]$Values)
     $map = Get-FieldMapping -ListName $ListName
+    $roSet = $script:ReadOnlyCache[$ListName]
     $resolved = @{}
     foreach ($key in $Values.Keys) {
         $realKey = Resolve-FieldKey -Map $map -Key $key
-        $resolved[$realKey] = $Values[$key]
+        # Skip calculated / read-only fields
+        if ($roSet -and $roSet.Contains($realKey)) {
+            Write-Host "    Skipping read-only field '$realKey'" -ForegroundColor DarkGray
+            continue
+        }
+        $val = $Values[$key]
+        # Convert date-like strings to DateTime for SharePoint
+        if ($val -is [string] -and $val -match '^\d{4}-\d{2}-\d{2}$') {
+            $val = [DateTime]::ParseExact($val, 'yyyy-MM-dd', [System.Globalization.CultureInfo]::InvariantCulture)
+        }
+        $resolved[$realKey] = $val
     }
     return $resolved
 }
